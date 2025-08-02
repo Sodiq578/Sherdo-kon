@@ -3,6 +3,7 @@ import './Menu.css';
 import Sidebar from '../components/Sidebar';
 import ProductCard from '../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
+import Quagga from 'quagga';
 
 const Menu = () => {
   const [products, setProducts] = useState([]);
@@ -12,6 +13,8 @@ const Menu = () => {
   const [customerInfo, setCustomerInfo] = useState('');
   const [showReceiptOptions, setShowReceiptOptions] = useState(false);
   const [lastOrder, setLastOrder] = useState(null);
+  const [showScanner, setShowScanner] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,12 +25,60 @@ const Menu = () => {
     setUser(currentUser);
   }, []);
 
+  useEffect(() => {
+    if (showScanner) {
+      setIsScanning(true);
+      Quagga.init({
+        inputStream: {
+          name: 'Live',
+          type: 'LiveStream',
+          target: document.querySelector('#scanner-container'),
+          constraints: {
+            facingMode: 'environment'
+          }
+        },
+        decoder: {
+          readers: ['ean_reader', 'code_128_reader', 'upc_reader']
+        }
+      }, (err) => {
+        if (err) {
+          console.error('Quagga initialization error:', err);
+          alert('Skaner ishga tushmadi. Iltimos, qaytadan urinib ko\'ring yoki shtrix kodni qo\'lda kiriting.');
+          setShowScanner(false);
+          setIsScanning(false);
+          return;
+        }
+        Quagga.start();
+        Quagga.onDetected((data) => {
+          const barcode = data.codeResult.code;
+          const product = products.find(p => p.shtrix === barcode);
+          if (product) {
+            updateQuantity(product.id, 1);
+            alert(`Mahsulot topildi: ${product.nomi}`);
+            Quagga.stop();
+            setShowScanner(false);
+            setIsScanning(false);
+          } else {
+            alert('Bu shtrix kod bilan mahsulot topilmadi! Yangi mahsulot qo\'shish uchun "Tovar qo\'shish" sahifasiga o\'ting.');
+            Quagga.stop();
+            setShowScanner(false);
+            setIsScanning(false);
+          }
+        });
+      });
+
+      return () => {
+        Quagga.stop();
+        setIsScanning(false);
+      };
+    }
+  }, [showScanner, products]);
+
   const updateQuantity = (id, change) => {
     setProducts(products.map(p => {
       if (p.id === id) {
         const newQuantity = Math.max(0, p.quantity + change);
         
-        // Automatically add to cart if quantity increased
         if (change > 0) {
           addToCart({ ...p, quantity: 1 });
         }
@@ -62,7 +113,8 @@ const Menu = () => {
 
   const filteredProducts = products.filter(product =>
     product.nomi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.kodi.toLowerCase().includes(searchTerm.toLowerCase())
+    product.kodi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.shtrix?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const total = cart.reduce((sum, item) => sum + (item.narx * item.quantity), 0);
@@ -145,43 +197,59 @@ const Menu = () => {
 
   if (!user) {
     return (
-      <div className="login-required">
-        <div className="login-message">
-          <h3>Kirish talab etiladi</h3>
-          <p>Iltimos, tizimga kiring yoki ro'yxatdan o'ting</p>
-          <button onClick={() => navigate('/')}>Kirish sahifasi</button>
+      <div className="login-required flex justify-center items-center h-screen">
+        <div className="login-message text-center">
+          <h3 className="text-2xl font-semibold mb-2">Kirish talab etiladi</h3>
+          <p className="mb-4">Iltimos, tizimga kiring yoki ro'yxatdan o'ting</p>
+          <button onClick={() => navigate('/')} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+            Kirish sahifasi
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="main-container">
+    <div className="main-container container mx-auto p-4">
       <Sidebar />
       <div className="content">
-        <div className="menu-header">
-          <h2>Salom, {user.ism}! Asosiy sahifa</h2>
-          <div className="search-bar">
+        <div className="menu-header flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Salom, {user.ism}! Asosiy sahifa</h2>
+          <div className="search-bar relative flex items-center space-x-2">
             <input
               type="text"
-              placeholder="Mahsulotlarni qidirish..."
+              className="border rounded px-3 py-2 w-64"
+              placeholder="Mahsulotlarni qidirish (nomi, kodi, shtrix kodi)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <i className="fas fa-search"></i>
+            <i className="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+            <button
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+              onClick={() => setShowScanner(!showScanner)}
+              disabled={isScanning}
+            >
+              {isScanning ? 'Skanerlanmoqda...' : showScanner ? 'Skanerni yopish' : 'Shtrix kod skanerlash'}
+            </button>
           </div>
         </div>
-        <div className="tabs">
-          <button className="active">Tovar jadavali</button>
-          <button onClick={() => navigate('/orders')}>Savdo statistikasi</button>
-          <button onClick={() => navigate('/add-product')}>Tovar qo'shish</button>
+        <div className="tabs flex space-x-2 mb-4">
+          <button className="px-4 py-2 bg-blue-500 text-white rounded">Tovar jadavali</button>
+          <button onClick={() => navigate('/orders')} className="px-4 py-2 bg-gray-200 rounded">Savdo statistikasi</button>
+          <button onClick={() => navigate('/add-product')} className="px-4 py-2 bg-gray-200 rounded">Tovar qo'shish</button>
         </div>
         
-        <div className="menu-content">
-          <div className="products-section">
-            <h3>Mahsulotlar ({filteredProducts.length})</h3>
+        {showScanner && (
+          <div id="scanner-container" className="scanner-container mb-4 border border-gray-300">
+            <video className="w-full h-auto"></video>
+          </div>
+        )}
+        
+        <div className="menu-content flex space-x-4">
+          <div className="products-section flex-1">
+            <h3 className="text-xl font-semibold mb-4">Mahsulotlar ({filteredProducts.length})</h3>
             {filteredProducts.length > 0 ? (
-              <div className="products-grid">
+              <div className="products-grid grid grid-cols-3 gap-4">
                 {filteredProducts.map((product) => (
                   <ProductCard
                     key={product.id}
@@ -197,24 +265,25 @@ const Menu = () => {
                 ))}
               </div>
             ) : (
-              <div className="no-products">
+              <div className="no-products p-4 text-center text-gray-500">
                 <p>Mahsulotlar topilmadi</p>
-                <button onClick={() => navigate('/add-product')}>
+                <button onClick={() => navigate('/add-product')} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mt-2">
                   Yangi mahsulot qo'shish
                 </button>
               </div>
             )}
           </div>
           
-          <div className="cart-section">
+          <div className="cart-section w-1/3 bg-white p-4 rounded shadow">
             <div className="cart-header">
-              <h3>Sotuv</h3>
+              <h3 className="text-xl font-semibold">Sotuv</h3>
               {lastOrder && <p>Chek raqami: #{lastOrder.receiptNo}</p>}
             </div>
             
-            <div className="customer-info">
+            <div className="customer-info mb-4">
               <input
                 type="text"
+                className="border rounded px-3 py-2 w-full"
                 placeholder="Mijoz ismi (ixtiyoriy)"
                 value={customerInfo}
                 onChange={(e) => setCustomerInfo(e.target.value)}
@@ -225,16 +294,16 @@ const Menu = () => {
               {cart.length > 0 ? (
                 <>
                   {cart.map(item => (
-                    <div key={item.id} className="cart-item">
+                    <div key={item.id} className="cart-item flex justify-between mb-2">
                       <div className="item-info">
                         <span className="item-name">{item.nomi}</span>
-                        <span className="item-quantity">{item.quantity} x {item.narx.toLocaleString()}</span>
+                        <span className="item-quantity block text-sm">{item.quantity} x {item.narx.toLocaleString()}</span>
                       </div>
-                      <div className="item-total">
+                      <div className="item-total flex items-center">
                         {(item.quantity * item.narx).toLocaleString()} UZS
                         <button 
                           onClick={() => removeFromCart(item.id)}
-                          className="remove-item"
+                          className="ml-2 text-red-500 hover:text-red-700"
                         >
                           ×
                         </button>
@@ -242,32 +311,32 @@ const Menu = () => {
                     </div>
                   ))}
                   
-                  <div className="cart-total">
+                  <div className="cart-total flex justify-between font-bold mt-4 pt-2 border-t">
                     <span>Jami:</span>
                     <span>{total.toLocaleString()} UZS</span>
                   </div>
                 </>
               ) : (
-                <div className="empty-cart">
+                <div className="empty-cart p-4 text-center text-gray-500">
                   <p>Savat bo'sh</p>
-                  <p>Mahsulotlarni savatga qo'shish uchun mahsulot ustiga bosing</p>
+                  <p>Mahsulotlarni savatga qo'shish uchun mahsulot ustiga bosing yoki shtrix kodni skanerlang</p>
                 </div>
               )}
             </div>
             
-            <div className="cart-actions">
+            <div className="cart-actions flex space-x-2 mt-4">
               {!showReceiptOptions ? (
                 <>
                   <button
                     onClick={() => setCart([])}
-                    className="clear-cart-btn"
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
                     disabled={cart.length === 0}
                   >
                     Savatni tozalash
                   </button>
                   <button
                     onClick={handleSell}
-                    className="place-order-btn"
+                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
                     disabled={cart.length === 0}
                   >
                     Sotish
@@ -277,13 +346,13 @@ const Menu = () => {
                 <>
                   <button
                     onClick={printReceipt}
-                    className="print-receipt-btn"
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
                   >
                     Chek chop etish
                   </button>
                   <button
                     onClick={finishOrder}
-                    className="finish-order-btn"
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
                   >
                     Tugatish
                   </button>

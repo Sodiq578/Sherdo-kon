@@ -3,7 +3,6 @@ import './Menu.css';
 import Sidebar from '../components/Sidebar';
 import ProductCard from '../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
-import BarcodeScannerComponent from 'react-webcam-barcode-scanner';
 
 const Menu = () => {
   const [products, setProducts] = useState([]);
@@ -13,87 +12,67 @@ const Menu = () => {
   const [customerInfo, setCustomerInfo] = useState('');
   const [showReceiptOptions, setShowReceiptOptions] = useState(false);
   const [lastOrder, setLastOrder] = useState(null);
-  const [showScanner, setShowScanner] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
-    setProducts(storedProducts.map((p) => ({ ...p, quantity: 0 })));
-
+    setProducts(storedProducts.map(p => ({ ...p, quantity: 0 })));
+    
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     setUser(currentUser);
   }, []);
 
   const updateQuantity = (id, change) => {
-    setProducts(
-      products.map((p) => {
-        if (p.id === id) {
-          const newQuantity = Math.max(0, p.quantity + change);
-
-          if (change > 0) {
-            addToCart({ ...p, quantity: 1 });
-          }
-
-          return { ...p, quantity: newQuantity };
+    setProducts(products.map(p => {
+      if (p.id === id) {
+        const newQuantity = Math.max(0, p.quantity + change);
+        
+        // Automatically add to cart if quantity increased
+        if (change > 0) {
+          addToCart({ ...p, quantity: 1 });
         }
-        return p;
-      })
-    );
+        
+        return { ...p, quantity: newQuantity };
+      }
+      return p;
+    }));
   };
 
   const addToCart = (product) => {
-    const existingItem = cart.find((item) => item.id === product.id);
-
+    const existingItem = cart.find(item => item.id === product.id);
+    
     if (existingItem) {
-      setCart(
-        cart.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + product.quantity } : item
-        )
-      );
+      setCart(cart.map(item =>
+        item.id === product.id 
+          ? { ...item, quantity: item.quantity + product.quantity }
+          : item
+      ));
     } else {
       setCart([...cart, { ...product }]);
     }
-
-    setProducts(
-      products.map((p) => (p.id === product.id ? { ...p, quantity: 0 } : p))
-    );
+    
+    setProducts(products.map(p => 
+      p.id === product.id ? { ...p, quantity: 0 } : p
+    ));
   };
 
   const removeFromCart = (id) => {
-    setCart(cart.filter((item) => item.id !== id));
+    setCart(cart.filter(item => item.id !== id));
   };
 
-  const handleBarcodeScanned = (data) => {
-    if (data) {
-      const scannedBarcode = data;
-      setSearchTerm(scannedBarcode);
-      setShowScanner(false);
-
-      // Automatically add product to cart if found
-      const product = products.find((p) => p.shtrix === scannedBarcode);
-      if (product) {
-        addToCart({ ...product, quantity: 1 });
-      } else {
-        alert("Bu shtrix kodga mos mahsulot topilmadi!");
-      }
-    }
-  };
-
-  const filteredProducts = products.filter(
-    (product) =>
-      product.nomi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.kodi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.shtrix?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = products.filter(product =>
+    product.nomi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.kodi.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const total = cart.reduce((sum, item) => sum + item.narx * item.quantity, 0);
+  const total = cart.reduce((sum, item) => sum + (item.narx * item.quantity), 0);
 
   const handleSell = () => {
     if (cart.length === 0) {
-      alert("Savat bo'sh!");
+      alert('Savat bo\'sh!');
       return;
     }
-
+    
     const order = {
       id: Date.now().toString(),
       receiptNo: Math.floor(1000 + Math.random() * 9000),
@@ -101,19 +80,19 @@ const Menu = () => {
       items: cart,
       total,
       date: new Date().toISOString(),
-      status: 'completed',
+      status: 'completed'
     };
-
+    
     const orders = JSON.parse(localStorage.getItem('orders')) || [];
     localStorage.setItem('orders', JSON.stringify([...orders, order]));
-
+    
     setLastOrder(order);
     setShowReceiptOptions(true);
   };
 
   const printReceipt = () => {
     if (!lastOrder) return;
-
+    
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
       <html>
@@ -136,16 +115,12 @@ const Menu = () => {
               <p>Sana: ${new Date(lastOrder.date).toLocaleString()}</p>
               ${lastOrder.customer !== "Noma'lum mijoz" ? `<p>Mijoz: ${lastOrder.customer}</p>` : ''}
             </div>
-            ${lastOrder.items
-              .map(
-                (item) => `
+            ${lastOrder.items.map(item => `
               <div class="item">
                 <span>${item.nomi} (${item.quantity} x ${item.narx.toLocaleString()})</span>
                 <span>${(item.quantity * item.narx).toLocaleString()} UZS</span>
               </div>
-            `
-              )
-              .join('')}
+            `).join('')}
             <div class="item total">
               <span>Jami:</span>
               <span>${lastOrder.total.toLocaleString()} UZS</span>
@@ -166,7 +141,6 @@ const Menu = () => {
     setCustomerInfo('');
     setShowReceiptOptions(false);
     setLastOrder(null);
-    setShowScanner(false);
   };
 
   if (!user) {
@@ -190,34 +164,19 @@ const Menu = () => {
           <div className="search-bar">
             <input
               type="text"
-              placeholder="Mahsulotlarni qidirish (nomi, kodi, shtrix kodi)..."
+              placeholder="Mahsulotlarni qidirish..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <i className="fas fa-search"></i>
-            <button
-              type="button"
-              className="scan-btn"
-              onClick={() => setShowScanner(!showScanner)}
-            >
-              {showScanner ? 'Skanerni yopish' : 'Shtrix kodni skanerlash'}
-            </button>
           </div>
-          {showScanner && (
-            <div className="scanner-container">
-              <BarcodeScannerComponent
-                onResult={handleBarcodeScanned}
-                onError={(error) => alert(`Skaner xatosi: ${error.message}`)}
-              />
-            </div>
-          )}
         </div>
         <div className="tabs">
           <button className="active">Tovar jadavali</button>
           <button onClick={() => navigate('/orders')}>Savdo statistikasi</button>
           <button onClick={() => navigate('/add-product')}>Tovar qo'shish</button>
         </div>
-
+        
         <div className="menu-content">
           <div className="products-section">
             <h3>Mahsulotlar ({filteredProducts.length})</h3>
@@ -246,13 +205,13 @@ const Menu = () => {
               </div>
             )}
           </div>
-
+          
           <div className="cart-section">
             <div className="cart-header">
               <h3>Sotuv</h3>
               {lastOrder && <p>Chek raqami: #{lastOrder.receiptNo}</p>}
             </div>
-
+            
             <div className="customer-info">
               <input
                 type="text"
@@ -261,21 +220,19 @@ const Menu = () => {
                 onChange={(e) => setCustomerInfo(e.target.value)}
               />
             </div>
-
+            
             <div className="cart-items">
               {cart.length > 0 ? (
                 <>
-                  {cart.map((item) => (
+                  {cart.map(item => (
                     <div key={item.id} className="cart-item">
                       <div className="item-info">
                         <span className="item-name">{item.nomi}</span>
-                        <span className="item-quantity">
-                          {item.quantity} x {item.narx.toLocaleString()}
-                        </span>
+                        <span className="item-quantity">{item.quantity} x {item.narx.toLocaleString()}</span>
                       </div>
                       <div className="item-total">
                         {(item.quantity * item.narx).toLocaleString()} UZS
-                        <button
+                        <button 
                           onClick={() => removeFromCart(item.id)}
                           className="remove-item"
                         >
@@ -284,7 +241,7 @@ const Menu = () => {
                       </div>
                     </div>
                   ))}
-
+                  
                   <div className="cart-total">
                     <span>Jami:</span>
                     <span>{total.toLocaleString()} UZS</span>
@@ -297,7 +254,7 @@ const Menu = () => {
                 </div>
               )}
             </div>
-
+            
             <div className="cart-actions">
               {!showReceiptOptions ? (
                 <>

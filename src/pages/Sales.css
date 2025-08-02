@@ -1,0 +1,129 @@
+/* Sales.css - Specific styles for Sales component */
+
+.main-container .content {
+  padding: 20px;
+  margin-left: 250px;
+}
+
+.sales-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.sales-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.sales-filter {
+  display: flex;
+  gap: 10px;
+}
+
+.sales-filter input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.sales-filter button {
+  padding: 8px 15px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.sales-filter button:hover {
+  background: #c0392b;
+}
+
+.sales-container {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.sales-table th {
+  background: #3498db;
+  color: white;
+  padding: 12px;
+  text-align: left;
+}
+
+.sales-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.sales-table tr:last-child td {
+  border-bottom: none;
+}
+
+.sales-table tr:hover {
+  background: #f8f9fa;
+}
+
+.view-btn {
+  padding: 6px 12px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.view-btn:hover {
+  background: #2980b9;
+}
+
+.no-sales {
+  text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .main-container .content {
+    margin-left: 0;
+    padding: 15px;
+  }
+  
+  .sales-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .sales-filter {
+    width: 100%;
+  }
+  
+  .sales-filter input {
+    flex: 1;
+  }
+  
+  .sales-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

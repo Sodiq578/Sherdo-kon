@@ -20,13 +20,7 @@ const ProductCard = ({ product, onIncrease, onDecrease, onAddToCart }) => {
           <span>{product.quantity || 0}</span>
           <button onClick={() => onIncrease(product.id)}>+</button>
         </div>
-        <button 
-          className="add-to-cart" 
-          onClick={() => onAddToCart(product)}
-          disabled={!product.quantity || product.quantity === 0}
-        >
-          Savatga qo'shish
-        </button>
+        
       </div>
     </div>
   );

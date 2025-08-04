@@ -1,8 +1,9 @@
+/* Sidebar container */
 .sidebar {
-  width: 250px;
+  width: 240px; /* Compact width for better screen space */
   height: 100vh;
-  background: #1e2a38; /* Darker, modern background */
-  color: #ffffff;
+  background: #f8fafc; /* Light, clean background */
+  color: #1f2937; /* Dark text for contrast */
   position: fixed;
   top: 0;
   left: 0;
@@ -10,9 +11,11 @@
   flex-direction: column;
   z-index: 1000;
   transition: transform 0.3s ease-in-out;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; /* Clean font */
 }
 
+/* Mobile sidebar behavior */
 .sidebar.mobile {
   transform: translateX(-100%);
 }
@@ -21,105 +24,178 @@
   transform: translateX(0);
 }
 
+/* Logo section */
 .logo {
-  padding: 20px;
+  padding: 16px 20px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid #2c3e50;
-  background: #17212b; /* Slightly darker header */
+  gap: 10px;
+  background: #ffffff; /* White header for contrast */
+  border-bottom: 1px solid #e5e7eb; /* Subtle border */
 }
 
 .logo img {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px; /* Rounded corners for logo */
+  width: 36px;
+  height: 36px;
+  border-radius: 8px; /* Rounded corners */
   object-fit: contain;
+  background: #e5e7eb;
+  padding: 3px;
 }
 
 .logo span {
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
 }
 
+/* Navigation menu */
 .nav-menu {
   list-style: none;
   padding: 0;
   margin: 0;
   flex: 1;
-  overflow-y: auto; /* Scrollable if content overflows */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #3b82f6 #e5e7eb; /* Blue scrollbar */
 }
 
+/* Custom scrollbar for WebKit browsers */
+.nav-menu::-webkit-scrollbar {
+  width: 5px;
+}
+
+.nav-menu::-webkit-scrollbar-track {
+  background: #e5e7eb;
+}
+
+.nav-menu::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 5px;
+}
+
+/* Navigation section titles */
 .nav-section-title {
-  padding: 15px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #a0b1c5; /* Lighter color for section titles */
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280; /* Muted gray for section titles */
   text-transform: uppercase;
-  letter-spacing: 1px;
-  border-top: 1px solid #2c3e50;
+  letter-spacing: 0.8px;
+  margin: 8px 0;
+  border-top: 1px solid #e5e7eb;
 }
 
+/* Navigation items */
 .nav-item {
-  padding: 12px 20px;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  font-size: 15px;
+  transition: background 0.2s ease, color 0.2s ease;
+  font-size: 14px;
+  color: #374151;
+  border-radius: 6px; /* Rounded edges */
+  margin: 0 8px;
 }
 
 .nav-item:hover, .nav-item:focus {
-  background: #2c3e50;
-  color: #4da8ff; /* Highlight color on hover/focus */
+  background: #dbeafe; /* Light blue hover */
+  color: #3b82f6; /* Blue text on hover */
   outline: none;
 }
 
 .nav-item i {
   width: 20px;
   text-align: center;
-  font-size: 16px;
+  font-size: 15px;
 }
 
+/* Active state for navigation items */
+.nav-item.active {
+  background: #3b82f6; /* Blue for active item */
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* Sidebar footer */
 .sidebar-footer {
-  padding: 15px;
+  padding: 16px 20px;
   text-align: center;
   font-size: 12px;
-  color: #7f8c8d;
-  border-top: 1px solid #2c3e50;
-  background: #17212b;
+  color: #6b7280;
+  border-top: 1px solid #e5e7eb;
+  background: #ffffff;
 }
 
-/* Burger Menu Styles */
+.sidebar-footer p {
+  margin: 0 0 10px 0;
+}
+
+/* Logout button */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  color: #374151;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  border-radius: 6px;
+  margin: 0 8px;
+}
+
+.logout-btn:hover, .logout-btn:focus {
+  background: #fee2e2; /* Light red for logout hover */
+  color: #ef4444; /* Red text on hover */
+  outline: none;
+}
+
+.logout-btn i {
+  width: 20px;
+  text-align: center;
+  font-size: 15px;
+}
+
+/* Burger menu */
 .burger-menu {
   position: fixed;
-  top: 20px;
-  left: 20px;
-  width: 30px;
-  height: 25px;
+  top: 16px;
+  left: 16px;
+  width: 36px;
+  height: 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   cursor: pointer;
   z-index: 1100;
-  background: none;
-  border: none;
-  padding: 0;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px;
+  transition: background 0.2s ease;
+}
+
+.burger-menu:hover {
+  background: #f3f4f6;
 }
 
 .burger-menu span {
   display: block;
   height: 3px;
   width: 100%;
-  background: #1e2a38;
+  background: #1f2937;
   border-radius: 3px;
   transition: all 0.3s ease;
 }
 
 .burger-menu.open span:nth-child(1) {
-  transform: translateY(11px) rotate(45deg);
+  transform: translateY(10px) rotate(45deg);
 }
 
 .burger-menu.open span:nth-child(2) {
@@ -127,11 +203,12 @@
 }
 
 .burger-menu.open span:nth-child(3) {
-  transform: translateY(-11px) rotate(-45deg);
+  transform: translateY(-10px) rotate(-45deg);
 }
 
 .burger-menu:focus {
-  outline: 2px solid #4da8ff;
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
 /* Overlay for mobile */
@@ -141,9 +218,9 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 900;
-  backdrop-filter: blur(2px); /* Subtle blur effect */
+  transition: opacity 0.3s ease;
 }
 
 /* Media Queries */
@@ -153,12 +230,29 @@
   }
 
   .sidebar {
-    transform: translateX(0); /* Ensure sidebar is always visible on desktop */
+    transform: translateX(0);
   }
 }
 
 /* Accessibility */
-.nav-item:focus {
-  outline: 2px solid #4da8ff;
+.nav-item:focus, .logout-btn:focus {
+  outline: 2px solid #3b82f6;
   outline-offset: -2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .sidebar {
+    background: #ffffff;
+    border-right: 2px solid #000000;
+  }
+
+  .nav-item, .logout-btn {
+    color: #000000;
+  }
+
+  .nav-item:hover, .nav-item:focus, .logout-btn:hover, .logout-btn:focus {
+    background: #3b82f6;
+    color: #ffffff;
+  }
 }

@@ -1,23 +1,32 @@
 .product-card {
+  display: flex;
+  flex-direction: column;
   background: white;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 280px;
-  margin: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 300px;
+  margin: 1rem;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .product-image {
-  height: 180px;
+  width: 100%;
+  height: 200px;
   overflow: hidden;
-  background: #f0f0f0;
+  background: #f5f5f5;
 }
 
 .product-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .no-image {
@@ -26,75 +35,154 @@
   justify-content: center;
   height: 100%;
   color: #666;
-  font-size: 16px;
+  font-size: 1.2rem;
+  background: #f0f0f0;
 }
 
 .product-info {
-  padding: 15px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .product-info h3 {
-  margin: 0 0 8px;
-  font-size: 18px;
+  margin: 0;
+  font-size: 1.25rem;
   color: #333;
+  font-weight: 600;
 }
 
 .product-code {
   color: #666;
-  font-size: 14px;
-  margin-bottom: 8px;
+  font-size: 0.9rem;
+  margin: 0;
 }
 
 .price {
-  color: #4CAF50;
-  font-size: 18px;
-  font-weight: bold;
-  margin: 8px 0;
+  color: #2ecc71;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
 }
 
 .quantity-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 10px 0;
+  gap: 0.75rem; /* Increased gap for better spacing with larger buttons */
 }
 
 .quantity-controls button {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: #4CAF50;
+  background: #3498db;
   color: white;
-  border-radius: 4px;
+  border: none;
+  border-radius: 10px; /* Slightly larger border-radius for proportionality */
+  width: 48px; /* Increased from 36px to 48px */
+  height: 48px; /* Increased from 36px to 48px */
+  font-size: 1.5rem; /* Increased font size for better readability */
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 .quantity-controls button:hover {
-  background: #45a049;
+  background: #2980b9;
 }
 
 .quantity-controls span {
-  font-size: 16px;
-  min-width: 24px;
+  font-size: 1.3rem; /* Slightly increased for balance */
+  min-width: 40px; /* Increased for larger buttons */
   text-align: center;
+  color: #333;
 }
 
 .add-to-cart {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  background: #2196F3;
+  background: #e74c3c;
   color: white;
-  border-radius: 4px;
+  border: none;
+  border-radius: 10px; /* Slightly larger border-radius */
+  padding: 1rem 2rem; /* Increased padding from 0.75rem 1.5rem */
+  font-size: 1.2rem; /* Increased from 1rem */
+  font-weight: 500;
   cursor: pointer;
-  font-size: 16px;
+  transition: background 0.3s ease;
 }
 
-.add-to-cart:disabled {
-  background: #ccc;
-  cursor: not-allowed;
+.add-to-cart:hover {
+  background: #c0392b;
 }
 
-.add-to-cart:hover:not(:disabled) {
-  background: #0b7dda;
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-card {
+    max-width: 100%;
+    margin: 0.5rem;
+  }
+
+  .product-image {
+    height: 150px;
+  }
+
+  .product-info {
+    padding: 1rem;
+  }
+
+  .product-info h3 {
+    font-size: 1.1rem;
+  }
+
+  .price {
+    font-size: 1.1rem;
+  }
+
+  .quantity-controls button {
+    width: 40px; /* Slightly smaller than desktop but larger than original 32px */
+    height: 40px;
+    font-size: 1.3rem; /* Adjusted for readability */
+  }
+
+  .quantity-controls span {
+    font-size: 1.2rem;
+    min-width: 35px;
+  }
+
+  .add-to-cart {
+    padding: 0.8rem 1.6rem; /* Adjusted padding for responsiveness */
+    font-size: 1.1rem; /* Slightly larger than original 0.9rem */
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card {
+    margin: 0.5rem 0;
+  }
+
+  .product-image {
+    height: 120px;
+  }
+
+  .product-info {
+    padding: 0.75rem;
+  }
+
+  .quantity-controls button {
+    width: 36px; /* Larger than original 32px */
+    height: 36px;
+    font-size: 1.2rem; /* Adjusted for smaller screens */
+  }
+
+  .quantity-controls span {
+    font-size: 1.1rem;
+    min-width: 30px;
+  }
+
+  .add-to-cart {
+    padding: 0.7rem 1.4rem; /* Adjusted padding */
+    font-size: 1rem; /* Larger than original 0.9rem */
+  }
 }

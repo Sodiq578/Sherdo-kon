@@ -34,11 +34,17 @@ const Sidebar = () => {
     if (isMobile) setIsOpen(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('currentUser');
+    navigate('/');
+    if (isMobile) setIsOpen(false);
+  };
+
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      if (!mobile) setIsOpen(false);
+      if (!mobile) setIsOpen(true); // Keep sidebar open on desktop
     };
 
     window.addEventListener('resize', handleResize);
@@ -64,6 +70,7 @@ const Sidebar = () => {
       {/* Sidebar */}
       <nav className={`sidebar ${isOpen ? 'open' : ''} ${isMobile ? 'mobile' : ''}`} aria-label="Main navigation">
         <div className="logo">
+          <img src="https://via.placeholder.com/40" alt="Savdo Tizimi Logo" />
           <span>Savdo Tizimi</span>
         </div>
         <ul className="nav-menu">
@@ -89,6 +96,14 @@ const Sidebar = () => {
         </ul>
         <div className="sidebar-footer">
           <p>© {new Date().getFullYear()} Savdo Tizimi</p>
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+            aria-label="Log out"
+          >
+            <i className="fas fa-sign-out-alt"></i>
+            <span>Tizimdan chiqish</span>
+          </button>
         </div>
       </nav>
 

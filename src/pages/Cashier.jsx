@@ -55,7 +55,7 @@ const Cashier = () => {
 
   const completeSale = () => {
     if (cart.length === 0) {
-      alert('Savat bo\'sh! Mahsulot qo\'shing.');
+      alert("Savat bo'sh! Mahsulot qo'shing.");
       return;
     }
 
@@ -71,11 +71,9 @@ const Cashier = () => {
       status: 'completed'
     };
 
-    // Save sale to localStorage
     const sales = JSON.parse(localStorage.getItem('sales')) || [];
     localStorage.setItem('sales', JSON.stringify([...sales, sale]));
 
-    // Update product quantities
     const updatedProducts = products.map(product => {
       const cartItem = cart.find(item => item.id === product.id);
       if (cartItem) {
@@ -87,10 +85,8 @@ const Cashier = () => {
     localStorage.setItem('products', JSON.stringify(updatedProducts));
     setProducts(updatedProducts);
 
-    // Print receipt (optional)
     printReceipt(sale);
 
-    // Reset form
     setCart([]);
     setCustomer('');
     setDiscount(0);
@@ -99,11 +95,10 @@ const Cashier = () => {
   };
 
   const printReceipt = (sale) => {
-    // This is a basic implementation - you might want to use a proper printing library
     const receiptContent = `
       Savdo #${sale.id}
       Sana: ${new Date(sale.date).toLocaleString()}
-      Mijoz: ${sale.customer || 'Noma\'lum'}
+      Mijoz: ${sale.customer || "Noma'lum"}
       
       Mahsulotlar:
       ${sale.items.map(item => `
@@ -112,12 +107,11 @@ const Cashier = () => {
       
       Jami: ${sale.total.toLocaleString()} UZS
       Chegirma: ${sale.discount}%
-      To'lov usuli: ${sale.paymentMethod === 'cash' ? 'Naqd' : 'Karta'}
-      Eslatma: ${sale.note || 'Yo\'q'}
+      To'lov usuli: ${sale.paymentMethod === 'cash' ? "Naqd" : sale.paymentMethod === 'card' ? "Karta" : "O'tkazma"}
+      Eslatma: ${sale.note || "Yo'q"}
     `;
 
-    console.log('Receipt:', receiptContent);
-    // In a real app, you would send this to a printer
+    console.log('Chek:', receiptContent);
   };
 
   const filteredProducts = products.filter(product =>
@@ -159,6 +153,15 @@ const Cashier = () => {
                     <h4>{product.nomi}</h4>
                     <p>{product.narx.toLocaleString()} UZS</p>
                     <p>Qoldiq: {product.soni}</p>
+                    <button 
+                      className="add-to-cart-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(product);
+                      }}
+                    >
+                      Savatga qo'shish
+                    </button>
                   </div>
                 </div>
               ))}

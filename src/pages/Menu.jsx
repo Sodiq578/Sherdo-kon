@@ -12,6 +12,7 @@ const Menu = () => {
   const [customerInfo, setCustomerInfo] = useState('');
   const [showReceiptOptions, setShowReceiptOptions] = useState(false);
   const [lastOrder, setLastOrder] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState('cash'); // 'cash' or 'card'
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,9 +28,19 @@ const Menu = () => {
       if (p.id === id) {
         const newQuantity = Math.max(0, p.quantity + change);
         
-        // Automatically add to cart if quantity increased
         if (change > 0) {
           addToCart({ ...p, quantity: 1 });
+        } else if (change < 0 && newQuantity >= 0) {
+          const cartItem = cart.find(item => item.id === id);
+          if (cartItem) {
+            if (cartItem.quantity > 1) {
+              setCart(cart.map(item =>
+                item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+              ));
+            } else {
+              setCart(cart.filter(item => item.id !== id));
+            }
+          }
         }
         
         return { ...p, quantity: newQuantity };
@@ -79,6 +90,7 @@ const Menu = () => {
       customer: customerInfo || "Noma'lum mijoz",
       items: cart,
       total,
+      paymentMethod,
       date: new Date().toISOString(),
       status: 'completed'
     };
@@ -105,6 +117,7 @@ const Menu = () => {
             .item { display: flex; justify-content: space-between; margin: 5px 0; }
             .total { font-weight: bold; margin-top: 10px; border-top: 1px dashed #000; padding-top: 5px; }
             .footer { margin-top: 15px; text-align: center; font-size: 12px; }
+            .payment-method { margin-top: 5px; font-style: italic; }
           </style>
         </head>
         <body>
@@ -114,6 +127,7 @@ const Menu = () => {
               <p>Chek raqami: #${lastOrder.receiptNo}</p>
               <p>Sana: ${new Date(lastOrder.date).toLocaleString()}</p>
               ${lastOrder.customer !== "Noma'lum mijoz" ? `<p>Mijoz: ${lastOrder.customer}</p>` : ''}
+              <p class="payment-method">To'lov usuli: ${lastOrder.paymentMethod === 'cash' ? 'Naqd' : 'Karta'}</p>
             </div>
             ${lastOrder.items.map(item => `
               <div class="item">
@@ -141,6 +155,7 @@ const Menu = () => {
     setCustomerInfo('');
     setShowReceiptOptions(false);
     setLastOrder(null);
+    setPaymentMethod('cash');
   };
 
   if (!user) {
@@ -219,6 +234,29 @@ const Menu = () => {
                 value={customerInfo}
                 onChange={(e) => setCustomerInfo(e.target.value)}
               />
+            </div>
+            
+            <div className="payment-methods">
+              <label>
+                <input
+                  type="radio"
+                  name="payment"
+                  value="cash"
+                  checked={paymentMethod === 'cash'}
+                  onChange={() => setPaymentMethod('cash')}
+                />
+                Naqd to'lov
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="payment"
+                  value="card"
+                  checked={paymentMethod === 'card'}
+                  onChange={() => setPaymentMethod('card')}
+                />
+                Karta orqali
+              </label>
             </div>
             
             <div className="cart-items">

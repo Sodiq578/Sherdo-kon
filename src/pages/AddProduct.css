@@ -1,4 +1,4 @@
-/* Umumiy stillar: Box-sizing va font sozlamalari */
+/* AddProduct.css */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,36 +6,39 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Asosiy konteyner: Fleks tuzilishi va gradient fon */
+/* Main container with subtle gradient */
 .main-container {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f0 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
-/* Kontent bo'limi: Sidebar bilan moslashish */
+/* Content area with smooth transition */
 .content {
   flex: 1;
   padding: 24px;
-  margin-left: 260px; /* Sidebar kengligiga mos */
-  transition: margin-left 0.3s ease;
+  margin-left: 260px;
+  transition: all 0.3s ease;
 }
 
-/* Sarlavha bo'limi: Moslashuvchan va zamonaviy */
+/* Header with modern styling */
 .menu-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .menu-header h2 {
   font-size: 28px;
   font-weight: 700;
-  color: #1a1f36;
+  color: #1e293b;
+  letter-spacing: -0.5px;
 }
 
-/* Qidiruv paneli: Toza va zamonaviy dizayn */
+/* Search bar with modern look */
 .search-bar {
   position: relative;
   width: 320px;
@@ -44,17 +47,17 @@
 .search-bar input {
   width: 100%;
   padding: 12px 16px 12px 44px;
-  border: 1px solid #d1d9e6;
-  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
   font-size: 15px;
-  background: #fff;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
 .search-bar input:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
   outline: none;
 }
 
@@ -63,16 +66,16 @@
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #6b7280;
+  color: #64748b;
   font-size: 16px;
 }
 
-/* Tablar: Zamonaviy va moslashuvchan navigatsiya */
+/* Tabs with modern indicator */
 .tabs {
   display: flex;
   gap: 8px;
   margin-bottom: 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .tabs button {
@@ -82,23 +85,23 @@
   border-bottom: 3px solid transparent;
   font-size: 15px;
   font-weight: 500;
-  color: #4b5563;
+  color: #64748b;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .tabs button:hover {
-  color: #111827;
-  border-bottom-color: #d1d9e6;
+  color: #334155;
 }
 
 .tabs button.active {
-  color: #10b981;
-  border-bottom-color: #10b981;
+  color: #4f46e5;
+  border-bottom-color: #4f46e5;
   font-weight: 600;
 }
 
-/* Forma konteyneri: Chiroyli va soyalangan */
+/* Main form container layout */
 .add-product-container {
   display: flex;
   gap: 24px;
@@ -106,20 +109,22 @@
 
 .add-product-form {
   flex: 1;
-  background: #fff;
+  background: #ffffff;
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .add-product-form h3 {
   font-size: 22px;
   font-weight: 600;
-  color: #1a1f36;
+  color: #1e293b;
   margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-/* Forma elementlari: Toza va foydalanuvchi uchun qulay */
+/* Form elements with consistent styling */
 .form-group {
   margin-bottom: 20px;
 }
@@ -128,7 +133,7 @@
   display: block;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: #334155;
   margin-bottom: 8px;
 }
 
@@ -136,22 +141,21 @@
 .form-group select {
   width: 100%;
   padding: 10px 14px;
-  border: 1px solid #d1d9e6;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
   font-size: 15px;
-  background: #fafafa;
-  transition: all 0.2s ease;
+  background: #ffffff;
+  transition: all 0.3s ease;
 }
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #10b981;
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
   outline: none;
 }
 
-/* Forma qatorlari: Moslashuvchan joylashuv */
+/* Form rows for side-by-side inputs */
 .form-row {
   display: flex;
   gap: 20px;
@@ -161,7 +165,7 @@
   flex: 1;
 }
 
-/* Kategoriya tanlash: Zamonaviy va qulay */
+/* Category selection with modern buttons */
 .category-select {
   display: flex;
   align-items: center;
@@ -170,20 +174,21 @@
 
 .category-select button {
   padding: 10px 16px;
-  background: #e5e7eb;
-  color: #374151;
+  background: #e2e8f0;
+  color: #334155;
   border: none;
   border-radius: 8px;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .category-select button:hover {
-  background: #d1d9e6;
+  background: #cbd5e1;
 }
 
-/* Yangi kategoriya inputi */
+/* New category input section */
 .new-category-input {
   display: flex;
   gap: 12px;
@@ -196,25 +201,26 @@
 
 .new-category-input button {
   padding: 10px 16px;
-  background: #10b981;
-  color: #fff;
+  background: #4f46e5;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .new-category-input button:hover {
-  background: #059669;
+  background: #4338ca;
 }
 
 .new-category-input button:disabled {
-  background: #9ca3af;
+  background: #94a3b8;
   cursor: not-allowed;
 }
 
-/* Checkbox: Zamonaviy va aniq */
+/* Checkbox with custom styling */
 .form-checkbox {
   display: flex;
   align-items: center;
@@ -225,15 +231,36 @@
 .form-checkbox input {
   width: 18px;
   height: 18px;
-  accent-color: #10b981;
+  accent-color: #4f46e5;
+  cursor: pointer;
 }
 
 .form-checkbox label {
   font-size: 14px;
-  color: #374151;
+  color: #334155;
+  cursor: pointer;
 }
 
-/* Forma tugmalari: Chiroyli va aniq */
+/* Current image preview */
+.current-image {
+  margin-top: 12px;
+}
+
+.current-image p {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.current-image img {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  max-width: 120px;
+  object-fit: cover;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Form action buttons */
 .form-actions {
   display: flex;
   gap: 12px;
@@ -248,100 +275,93 @@
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .form-actions button[type="submit"] {
-  background: #10b981;
-  color: #fff;
+  background: #4f46e5;
+  color: #ffffff;
 }
 
 .form-actions button[type="submit"]:hover {
-  background: #059669;
+  background: #4338ca;
 }
 
 .form-actions button[type="button"] {
   background: #ef4444;
-  color: #fff;
+  color: #ffffff;
 }
 
 .form-actions button[type="button"]:hover {
   background: #dc2626;
 }
 
-/* Joriy rasm: Toza va zamonaviy */
-.current-image {
-  margin-top: 12px;
-}
-
-.current-image p {
-  font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 8px;
-}
-
-.current-image img {
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  max-width: 120px;
-  object-fit: cover;
-}
-
-/* Mahsulotlar ro'yxati: Soyali va moslashuvchan */
+/* Product list styling */
 .product-list {
   flex: 1;
-  background: #fff;
+  background: #ffffff;
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .product-list h3 {
   font-size: 22px;
   font-weight: 600;
-  color: #1a1f36;
+  color: #1e293b;
   margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-/* Mahsulotlar oynasi: Skroll qulayligi */
+/* Product items scrollable container */
 .product-items {
   max-height: 600px;
   overflow-y: auto;
   padding-right: 8px;
 }
 
+/* Custom scrollbar */
 .product-items::-webkit-scrollbar {
   width: 6px;
 }
 
+.product-items::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
 .product-items::-webkit-scrollbar-thumb {
-  background: #d1d9e6;
+  background: #cbd5e1;
   border-radius: 6px;
 }
 
-/* Mahsulot kartasi: Zamonaviy va interaktiv */
+/* Product item card */
 .product-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   margin-bottom: 12px;
-  background: #fafafa;
-  transition: all 0.2s ease;
+  background: #ffffff;
+  transition: all 0.3s ease;
 }
 
 .product-item:hover {
-  background: #f3f4f6;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .product-item.essential {
-  border-left: 4px solid #10b981;
+  border-left: 4px solid #4f46e5;
 }
 
-/* Mahsulot detallari: Rasm va matn */
+/* Product details section */
 .product-details {
   display: flex;
   align-items: center;
@@ -353,37 +373,40 @@
   height: 64px;
   object-fit: cover;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e2e8f0;
 }
 
 .product-details h4 {
   font-size: 17px;
   font-weight: 600;
-  color: #1a1f36;
+  color: #1e293b;
   margin-bottom: 6px;
+  display: flex;
+  align-items: center;
 }
 
-.product-details .essential-badge {
-  background: #10b981;
-  color: #fff;
+.essential-badge {
+  background: #4f46e5;
+  color: #ffffff;
   font-size: 12px;
   padding: 3px 8px;
   border-radius: 12px;
   margin-left: 8px;
+  font-weight: 500;
 }
 
 .product-details p {
   font-size: 13px;
-  color: #6b7280;
+  color: #64748b;
   margin: 3px 0;
 }
 
 .date-info {
   font-size: 12px;
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
-/* Mahsulot harakatlari: Tugmalar */
+/* Product action buttons */
 .product-actions {
   display: flex;
   gap: 12px;
@@ -396,12 +419,15 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .product-actions button.edit-btn {
   background: #3b82f6;
-  color: #fff;
+  color: #ffffff;
 }
 
 .product-actions button.edit-btn:hover {
@@ -410,48 +436,42 @@
 
 .product-actions button.delete-btn {
   background: #ef4444;
-  color: #fff;
+  color: #ffffff;
 }
 
 .product-actions button.delete-btn:hover {
   background: #dc2626;
 }
 
-/* Mahsulotlar yo'qligi: Toza ko'rinish */
+/* Empty state styling */
 .no-products {
   text-align: center;
   padding: 48px 24px;
-  color: #6b7280;
+  color: #64748b;
   font-size: 15px;
-  background: #f9fafb;
+  background: #f8fafc;
   border-radius: 12px;
+  border: 1px dashed #cbd5e1;
 }
 
-/* Skaner konteyneri: Toza va moslashuvchan */
-.scanner-container {
-  width: 100%;
-  max-width: 640px;
-  margin: 16px auto;
-  background-color: #f0f0f0;
-  border: 1px solid #d1d9e6;
-  border-radius: 12px;
-  overflow: hidden;
+.no-products i {
+  font-size: 40px;
+  margin-bottom: 15px;
+  color: #cbd5e1;
 }
 
-.scanner-container video {
-  display: block;
-  width: 100%;
-  height: auto;
+.no-products p {
+  margin: 0;
+  font-size: 14px;
 }
 
-/* Moslashuvchan dizayn: Katta ekranlar */
+/* Responsive design */
 @media (max-width: 1200px) {
   .content {
-    margin-left: 80px; /* Yopilgan sidebar uchun */
+    margin-left: 80px;
   }
 }
 
-/* O'rta ekranlar */
 @media (max-width: 992px) {
   .add-product-container {
     flex-direction: column;
@@ -467,7 +487,6 @@
   }
 }
 
-/* Kichik ekranlar */
 @media (max-width: 768px) {
   .menu-header {
     flex-direction: column;
@@ -482,6 +501,7 @@
   .tabs {
     overflow-x: auto;
     white-space: nowrap;
+    padding-bottom: 8px;
   }
 
   .tabs button {
@@ -501,6 +521,7 @@
 
   .category-select button {
     width: 100%;
+    margin-top: 8px;
   }
 
   .new-category-input {
@@ -516,10 +537,10 @@
   .product-actions {
     width: 100%;
     justify-content: flex-end;
+    margin-top: 12px;
   }
 }
 
-/* Juda kichik ekranlar */
 @media (max-width: 480px) {
   .menu-header h2 {
     font-size: 24px;
@@ -543,5 +564,15 @@
   .form-actions button {
     font-size: 14px;
     padding: 10px;
+  }
+
+  .product-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 }

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './Returns.css';
 import Sidebar from '../components/Sidebar';
 
@@ -9,13 +8,18 @@ const Returns = () => {
   const [selectedSale, setSelectedSale] = useState(null);
   const [returnItems, setReturnItems] = useState([]);
   const [reason, setReason] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const storedReturns = JSON.parse(localStorage.getItem('returns')) || [];
-    const storedSales = JSON.parse(localStorage.getItem('sales')) || [];
-    setReturns(storedReturns);
-    setSales(storedSales);
+    try {
+      const storedReturns = JSON.parse(localStorage.getItem('returns')) || [];
+      const storedSales = JSON.parse(localStorage.getItem('sales')) || [];
+      setReturns(storedReturns);
+      setSales(storedSales);
+    } catch (error) {
+      console.error("Ma'lumotlarni o'qishda xatolik:", error);
+      setReturns([]);
+      setSales([]);
+    }
   }, []);
 
   const processReturn = () => {
@@ -33,26 +37,31 @@ const Returns = () => {
       total: returnItems.reduce((sum, item) => sum + (item.narx * item.quantity), 0)
     };
 
-    // Save return
-    localStorage.setItem('returns', JSON.stringify([...returns, newReturn]));
+    try {
+      // Save return
+      localStorage.setItem('returns', JSON.stringify([...returns, newReturn]));
 
-    // Update product quantities
-    const products = JSON.parse(localStorage.getItem('products')) || [];
-    const updatedProducts = products.map(product => {
-      const returnItem = returnItems.find(item => item.id === product.id);
-      if (returnItem) {
-        return { ...product, soni: product.soni + returnItem.quantity };
-      }
-      return product;
-    });
+      // Update product quantities
+      const products = JSON.parse(localStorage.getItem('products')) || [];
+      const updatedProducts = products.map(product => {
+        const returnItem = returnItems.find(item => item.id === product.id);
+        if (returnItem) {
+          return { ...product, soni: product.soni + returnItem.quantity };
+        }
+        return product;
+      });
 
-    localStorage.setItem('products', JSON.stringify(updatedProducts));
+      localStorage.setItem('products', JSON.stringify(updatedProducts));
 
-    alert('Mahsulot muvaffaqiyatli qaytarildi!');
-    setSelectedSale(null);
-    setReturnItems([]);
-    setReason('');
-    setReturns([...returns, newReturn]);
+      alert('Mahsulot muvaffaqiyatli qaytarildi!');
+      setSelectedSale(null);
+      setReturnItems([]);
+      setReason('');
+      setReturns([...returns, newReturn]);
+    } catch (error) {
+      console.error("Ma'lumotlarni saqlashda xatolik:", error);
+      alert('Xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring.');
+    }
   };
 
   return (

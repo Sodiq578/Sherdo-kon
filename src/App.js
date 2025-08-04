@@ -10,21 +10,24 @@ import Cashier from './pages/Cashier';
 import Returns from './pages/Returns';
 import './App.css';
 
-const App = () => {
+function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/add-product" element={<AddProduct />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/stats" element={<Stats />} />
-        <Route path="/sales" element={<Sales />} />
-        <Route path="/cashier" element={<Cashier />} />
-        <Route path="/returns" element={<Returns />} />
-      </Routes>
-    </Router>
+    <div className="App">
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/add-product" element={<AddProduct />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/stats" element={<Stats />} />
+          <Route path="/sales" element={<Sales />} />
+          <Route path="/cashier" element={<Cashier />} />
+          <Route path="/returns" element={<Returns />} />
+        </Routes>
+      </Router>
+    </div>
   );
-};
+}
 
 export default App;
+

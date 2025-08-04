@@ -17,6 +17,7 @@
     "react-toastify": "^11.0.5",
     "web-vitals": "^5.1.0"
   },
+  "homepage": "http://localhost:3000/Sodiq578/Sherdo-ko",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -24,34 +25,10 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": ["react-app", "react-app/jest"]
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Sodiq578/Sherdo-kon.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Sodiq578/Sherdo-kon/issues"
-  },
-  "homepage": "https://github.com/Sodiq578/Sherdo-kon#readme"
+    "production": [">0.2%", "not dead", "not op_mini all"],
+    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+  }
 }

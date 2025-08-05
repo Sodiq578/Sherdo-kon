@@ -1,169 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import './Menu.css';
 import Sidebar from '../components/Sidebar';
-import ProductCard from '../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
 
 const Menu = () => {
   const [products, setProducts] = useState([]);
-  const [cart, setCart] = useState([]);
-  const [user, setUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [customerInfo, setCustomerInfo] = useState('');
-  const [showReceiptOptions, setShowReceiptOptions] = useState(false);
-  const [lastOrder, setLastOrder] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('cash'); // 'cash' or 'card'
+  const [user, setUser] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showProductDetail, setShowProductDetail] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
+
+  const haftaKunlari = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
+  const oylar = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
 
   useEffect(() => {
     const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
-    setProducts(storedProducts.map(p => ({ ...p, quantity: 0 })));
+    setProducts(storedProducts);
     
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     setUser(currentUser);
+
+    // Vaqtni yangilash
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
-
-  const updateQuantity = (id, change) => {
-    setProducts(products.map(p => {
-      if (p.id === id) {
-        const newQuantity = Math.max(0, p.quantity + change);
-        
-        if (change > 0) {
-          addToCart({ ...p, quantity: 1 });
-        } else if (change < 0 && newQuantity >= 0) {
-          const cartItem = cart.find(item => item.id === id);
-          if (cartItem) {
-            if (cartItem.quantity > 1) {
-              setCart(cart.map(item =>
-                item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-              ));
-            } else {
-              setCart(cart.filter(item => item.id !== id));
-            }
-          }
-        }
-        
-        return { ...p, quantity: newQuantity };
-      }
-      return p;
-    }));
-  };
-
-  const addToCart = (product) => {
-    const existingItem = cart.find(item => item.id === product.id);
-    
-    if (existingItem) {
-      setCart(cart.map(item =>
-        item.id === product.id 
-          ? { ...item, quantity: item.quantity + product.quantity }
-          : item
-      ));
-    } else {
-      setCart([...cart, { ...product }]);
-    }
-    
-    setProducts(products.map(p => 
-      p.id === product.id ? { ...p, quantity: 0 } : p
-    ));
-  };
-
-  const removeFromCart = (id) => {
-    setCart(cart.filter(item => item.id !== id));
-  };
 
   const filteredProducts = products.filter(product =>
     product.nomi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.kodi.toLowerCase().includes(searchTerm.toLowerCase())
+    product.kodi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (product.shtrix_kod && product.shtrix_kod.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const total = cart.reduce((sum, item) => sum + (item.narx * item.quantity), 0);
-
-  const handleSell = () => {
-    if (cart.length === 0) {
-      alert('Savat bo\'sh!');
-      return;
-    }
-    
-    const order = {
-      id: Date.now().toString(),
-      receiptNo: Math.floor(1000 + Math.random() * 9000),
-      customer: customerInfo || "Noma'lum mijoz",
-      items: cart,
-      total,
-      paymentMethod,
-      date: new Date().toISOString(),
-      status: 'completed'
-    };
-    
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
-    localStorage.setItem('orders', JSON.stringify([...orders, order]));
-    
-    setLastOrder(order);
-    setShowReceiptOptions(true);
+  const openProductDetail = (product) => {
+    setSelectedProduct(product);
+    setShowProductDetail(true);
   };
 
-  const printReceipt = () => {
-    if (!lastOrder) return;
-    
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Chek #${lastOrder.receiptNo}</title>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            .receipt { width: 300px; margin: 0 auto; }
-            .header { text-align: center; margin-bottom: 15px; }
-            .item { display: flex; justify-content: space-between; margin: 5px 0; }
-            .total { font-weight: bold; margin-top: 10px; border-top: 1px dashed #000; padding-top: 5px; }
-            .footer { margin-top: 15px; text-align: center; font-size: 12px; }
-            .payment-method { margin-top: 5px; font-style: italic; }
-          </style>
-        </head>
-        <body>
-          <div class="receipt">
-            <div class="header">
-              <h2>Sherbek do'kon</h2>
-              <p>Chek raqami: #${lastOrder.receiptNo}</p>
-              <p>Sana: ${new Date(lastOrder.date).toLocaleString()}</p>
-              ${lastOrder.customer !== "Noma'lum mijoz" ? `<p>Mijoz: ${lastOrder.customer}</p>` : ''}
-              <p class="payment-method">To'lov usuli: ${lastOrder.paymentMethod === 'cash' ? 'Naqd' : 'Karta'}</p>
-            </div>
-            ${lastOrder.items.map(item => `
-              <div class="item">
-                <span>${item.nomi} (${item.quantity} x ${item.narx.toLocaleString()})</span>
-                <span>${(item.quantity * item.narx).toLocaleString()} UZS</span>
-              </div>
-            `).join('')}
-            <div class="item total">
-              <span>Jami:</span>
-              <span>${lastOrder.total.toLocaleString()} UZS</span>
-            </div>
-            <div class="footer">
-              <p>Rahmat!</p>
-              <p>Qaytib kelishingizni kutamiz</p>
-            </div>
-          </div>
-          <script>window.print();</script>
-        </body>
-      </html>
-    `);
+  const closeProductDetail = () => {
+    setShowProductDetail(false);
+    setSelectedProduct(null);
   };
 
-  const finishOrder = () => {
-    setCart([]);
-    setCustomerInfo('');
-    setShowReceiptOptions(false);
-    setLastOrder(null);
-    setPaymentMethod('cash');
+  const calculateRegistrationTime = () => {
+    if (!user || !user.registrationTime) return "0 daqiqa";
+    
+    const regTime = new Date(user.registrationTime);
+    const diff = (currentTime - regTime) / 1000; // soniyalarda
+    
+    if (diff < 60) return `${Math.floor(diff)} soniya`;
+    if (diff < 3600) return `${Math.floor(diff / 60)} daqiqa`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} soat`;
+    return `${Math.floor(diff / 86400)} kun`;
   };
 
   if (!user) {
     return (
       <div className="login-required">
         <div className="login-message">
-          <h3>Kirish talab etiladi</h3>
-          <p>Iltimos, tizimga kiring yoki ro'yxatdan o'ting</p>
+          <h3>Kirish talab qilinadi</h3>
+          <p>Davom etish uchun tizimga kiring yoki ro'yxatdan o'ting</p>
           <button onClick={() => navigate('/')}>Kirish sahifasi</button>
         </div>
       </div>
@@ -174,163 +74,173 @@ const Menu = () => {
     <div className="main-container">
       <Sidebar />
       <div className="content">
+        <div className="time-user-info">
+          <div className="current-time">
+            <span>{haftaKunlari[currentTime.getDay()]}, </span>
+            <span>{currentTime.getDate()} {oylar[currentTime.getMonth()]} </span>
+            <span>{currentTime.getFullYear()} yil, </span>
+            <span>{currentTime.getHours().toString().padStart(2, '0')}:</span>
+            <span>{currentTime.getMinutes().toString().padStart(2, '0')}:</span>
+            <span>{currentTime.getSeconds().toString().padStart(2, '0')}</span>
+          </div>
+          
+          {user && (
+            <div className="user-info">
+              <span className="username">{user.ism}</span>
+              <span className="registration-time">Ro'yxatdan o'tgan: {calculateRegistrationTime()} oldin</span>
+            </div>
+          )}
+        </div>
         <div className="menu-header">
           <h2>Salom, {user.ism}! Asosiy sahifa</h2>
           <div className="search-bar">
             <input
               type="text"
-              placeholder="Mahsulotlarni qidirish..."
+              placeholder="Mahsulot nomi, kodi yoki shtrix kodi bo'yicha qidiruv..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <i className="fas fa-search"></i>
           </div>
         </div>
+        
         <div className="tabs">
-          <button className="active">Tovar jadavali</button>
-          <button onClick={() => navigate('/orders')}>Savdo statistikasi</button>
-          <button onClick={() => navigate('/add-product')}>Tovar qo'shish</button>
+          <button className="active">Mahsulotlar ro'yxati</button>
+          <button onClick={() => navigate('/orders')}>Sotuv statistikasi</button>
+          <button onClick={() => navigate('/add-product')}>Yangi mahsulot qo'shish</button>
         </div>
         
         <div className="menu-content">
           <div className="products-section">
-            <h3>Mahsulotlar ({filteredProducts.length})</h3>
+            <div className="products-header">
+              <h3>Mahsulotlar ({filteredProducts.length})</h3>
+            </div>
+            
             {filteredProducts.length > 0 ? (
               <div className="products-grid">
                 {filteredProducts.map((product) => (
-                  <ProductCard
+                  <div
                     key={product.id}
-                    product={product}
-                    onIncrease={(id) => updateQuantity(id, 1)}
-                    onDecrease={(id) => updateQuantity(id, -1)}
-                    onClick={() => {
-                      if (product.quantity === 0) {
-                        updateQuantity(product.id, 1);
-                      }
-                    }}
-                  />
+                    className={`product-card ${product.soni <= 0 ? 'disabled' : ''}`}
+                    onClick={() => product.soni > 0 && openProductDetail(product)}
+                  >
+                    {product.rasm ? (
+                      <img
+                        src={product.rasm}
+                        alt={product.nomi}
+                        className="product-image"
+                      />
+                    ) : (
+                      <div className="product-image-placeholder">
+                        <i className="fas fa-box-open"></i>
+                      </div>
+                    )}
+                    <div className="product-info">
+                      <h4>{product.nomi}</h4>
+                      <div className="product-meta">
+                        <span className="price">{product.narx ? product.narx.toLocaleString() + ' UZS' : 'Narx belgilanmagan'}</span>
+                        <span className={`stock ${product.soni <= 0 ? 'out-of-stock' : ''}`}>
+                          Qoldiq: {product.soni} ta
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : (
               <div className="no-products">
-                <p>Mahsulotlar topilmadi</p>
+                <p>Hech qanday mahsulot topilmadi</p>
                 <button onClick={() => navigate('/add-product')}>
                   Yangi mahsulot qo'shish
                 </button>
               </div>
             )}
           </div>
-          
-          <div className="cart-section">
-            <div className="cart-header">
-              <h3>Sotuv</h3>
-              {lastOrder && <p>Chek raqami: #{lastOrder.receiptNo}</p>}
+        </div>
+      </div>
+
+      {/* Mahsulot haqida batafsil ma'lumot modal oynasi */}
+      {showProductDetail && selectedProduct && (
+        <div className="modal-overlay">
+          <div className="product-detail-modal">
+            <button className="close-modal" onClick={closeProductDetail}>
+              &times;
+            </button>
+            
+            <div className="modal-header">
+              <h3>{selectedProduct.nomi}</h3>
             </div>
             
-            <div className="customer-info">
-              <input
-                type="text"
-                placeholder="Mijoz ismi (ixtiyoriy)"
-                value={customerInfo}
-                onChange={(e) => setCustomerInfo(e.target.value)}
-              />
-            </div>
-            
-            <div className="payment-methods">
-              <label>
-                <input
-                  type="radio"
-                  name="payment"
-                  value="cash"
-                  checked={paymentMethod === 'cash'}
-                  onChange={() => setPaymentMethod('cash')}
+            <div className="modal-body">
+              {selectedProduct.rasm ? (
+                <img
+                  src={selectedProduct.rasm}
+                  alt={selectedProduct.nomi}
+                  className="detail-image"
                 />
-                Naqd to'lov
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="payment"
-                  value="card"
-                  checked={paymentMethod === 'card'}
-                  onChange={() => setPaymentMethod('card')}
-                />
-                Karta orqali
-              </label>
-            </div>
-            
-            <div className="cart-items">
-              {cart.length > 0 ? (
-                <>
-                  {cart.map(item => (
-                    <div key={item.id} className="cart-item">
-                      <div className="item-info">
-                        <span className="item-name">{item.nomi}</span>
-                        <span className="item-quantity">{item.quantity} x {item.narx.toLocaleString()}</span>
-                      </div>
-                      <div className="item-total">
-                        {(item.quantity * item.narx).toLocaleString()} UZS
-                        <button 
-                          onClick={() => removeFromCart(item.id)}
-                          className="remove-item"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  <div className="cart-total">
-                    <span>Jami:</span>
-                    <span>{total.toLocaleString()} UZS</span>
-                  </div>
-                </>
               ) : (
-                <div className="empty-cart">
-                  <p>Savat bo'sh</p>
-                  <p>Mahsulotlarni savatga qo'shish uchun mahsulot ustiga bosing</p>
+                <div className="detail-image-placeholder">
+                  <i className="fas fa-box-open"></i>
                 </div>
               )}
+              
+              <div className="detail-info">
+                <div className="detail-row">
+                  <span className="detail-label">Narxi:</span>
+                  <span className="detail-value">
+                    {selectedProduct.narx ? selectedProduct.narx.toLocaleString() + ' UZS' : 'Narx belgilanmagan'}
+                  </span>
+                </div>
+                
+                <div className="detail-row">
+                  <span className="detail-label">Qoldiq:</span>
+                  <span className={`detail-value ${selectedProduct.soni <= 0 ? 'out-of-stock' : ''}`}>
+                    {selectedProduct.soni} ta
+                  </span>
+                </div>
+                
+                <div className="detail-row">
+                  <span className="detail-label">Mahsulot kodi:</span>
+                  <span className="detail-value">{selectedProduct.kodi || 'Belgilanmagan'}</span>
+                </div>
+                
+                {selectedProduct.shtrix_kod && (
+                  <div className="detail-row">
+                    <span className="detail-label">Shtrix kod:</span>
+                    <span className="detail-value">{selectedProduct.shtrix_kod}</span>
+                  </div>
+                )}
+                
+                {selectedProduct.izoh && (
+                  <div className="detail-row">
+                    <span className="detail-label">Qo'shimcha ma'lumot:</span>
+                    <span className="detail-value">{selectedProduct.izoh}</span>
+                  </div>
+                )}
+                
+                <div className="detail-row">
+                  <span className="detail-label">Yaratilgan sana:</span>
+                  <span className="detail-value">
+                    {new Date(selectedProduct.createdAt || Date.now()).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
             </div>
             
-            <div className="cart-actions">
-              {!showReceiptOptions ? (
-                <>
-                  <button
-                    onClick={() => setCart([])}
-                    className="clear-cart-btn"
-                    disabled={cart.length === 0}
-                  >
-                    Savatni tozalash
-                  </button>
-                  <button
-                    onClick={handleSell}
-                    className="place-order-btn"
-                    disabled={cart.length === 0}
-                  >
-                    Sotish
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={printReceipt}
-                    className="print-receipt-btn"
-                  >
-                    Chek chop etish
-                  </button>
-                  <button
-                    onClick={finishOrder}
-                    className="finish-order-btn"
-                  >
-                    Tugatish
-                  </button>
-                </>
-              )}
+            <div className="modal-footer">
+              <button
+                onClick={() => navigate(`/edit-product/${selectedProduct.id}`)}
+                className="edit-btn"
+              >
+                Tahrirlash
+              </button>
+              <button onClick={closeProductDetail} className="close-btn">
+                Yopish
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

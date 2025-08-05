@@ -161,17 +161,17 @@
   text-align: center;
   font-size: 15px;
 }
-
 /* Burger menu */
 .burger-menu {
   position: fixed;
   top: 16px;
-  left: 16px;
+  right: 15px;
   width: 36px;
   height: 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   cursor: pointer;
   z-index: 1100;
   background: #ffffff;

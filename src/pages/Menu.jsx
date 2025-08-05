@@ -22,7 +22,6 @@ const Menu = () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     setUser(currentUser);
 
-    // Vaqtni yangilash
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -50,8 +49,8 @@ const Menu = () => {
     if (!user || !user.registrationTime) return "0 daqiqa";
     
     const regTime = new Date(user.registrationTime);
-    const diff = (currentTime - regTime) / 1000; // soniyalarda
-    
+    const diff = (currentTime - regTime) / 1000;
+
     if (diff < 60) return `${Math.floor(diff)} soniya`;
     if (diff < 3600) return `${Math.floor(diff / 60)} daqiqa`;
     if (diff < 86400) return `${Math.floor(diff / 3600)} soat`;
@@ -159,7 +158,6 @@ const Menu = () => {
         </div>
       </div>
 
-      {/* Mahsulot haqida batafsil ma'lumot modal oynasi */}
       {showProductDetail && selectedProduct && (
         <div className="modal-overlay">
           <div className="product-detail-modal">

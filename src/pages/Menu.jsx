@@ -19,11 +19,10 @@ const Menu = () => {
   const haftaKunlari = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
   const oylar = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
 
-  // Mahsulotlarni yuklash
+  // Load products and user data, update time every second
   useEffect(() => {
     const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
     setProducts(storedProducts);
-    
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     setUser(currentUser);
 
@@ -34,7 +33,7 @@ const Menu = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Skaner effekti
+  // Handle barcode scanner lifecycle
   useEffect(() => {
     if (showScanner) {
       startScanner();
@@ -44,7 +43,7 @@ const Menu = () => {
     return () => stopScanner();
   }, [showScanner]);
 
-  // Skanerni ishga tushirish
+  // Start barcode scanner
   const startScanner = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -62,14 +61,14 @@ const Menu = () => {
     }
   };
 
-  // Skanerni to'xtatish
+  // Stop barcode scanner
   const stopScanner = () => {
     if (videoRef.current?.srcObject) {
       videoRef.current.srcObject.getTracks().forEach(track => track.stop());
     }
   };
 
-  // Shtrix-kodni skanerlash
+  // Scan barcode from video feed
   const scanBarcode = () => {
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
@@ -93,39 +92,40 @@ const Menu = () => {
     requestAnimationFrame(scan);
   };
 
-  // Mahsulotlarni filtrlash
+  // Filter products based on search term
   const filteredProducts = products.filter(product =>
     product.nomi.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.kodi.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (product.shtrix_kod && product.shtrix_kod.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  // Mahsulot tafsilotlarini ochish
+  // Open product detail modal
   const openProductDetail = (product) => {
     setSelectedProduct(product);
     setShowProductDetail(true);
   };
 
-  // Mahsulot tafsilotlarini yopish
+  // Close product detail modal
   const closeProductDetail = () => {
     setShowProductDetail(false);
     setSelectedProduct(null);
   };
 
-  // Ro'yxatdan o'tgan vaqtni hisoblash
-  const calculateRegistrationTime = () => {
-    if (!user || !user.registrationTime) return "0 daqiqa";
-    
-    const regTime = new Date(user.registrationTime);
-    const diff = (currentTime - regTime) / 1000;
+  // Calculate registration time
+ const calculateRegistrationTime = () => {
+  if (!user || !user.registrationTime) return "0 daqiqa";
+  const regTime = new Date(user.registrationTime);
+  const diff = (currentTime - regTime) / 1000; // Difference in seconds
 
-    if (diff < 60) return `${Math.floor(diff)} soniya`;
-    if (diff < 3600) return `${Math.floor(diff / 60)} daqiqa`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)} soat`;
-    return `${Math.floor(diff / 86400)} kun`;
-  };
+  if (diff < 60) return `${Math.floor(diff)} soniya`;
+  if (diff < 3600) return `${Math.floor(diff / 60)} daqiqa`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} soat`;
+  if (diff < 7776000) return `${Math.floor(diff / 86400)} kun`; // Less than 90 days
+  if (diff < 7776000 * 1.5) return "2 oy"; // Between ~60 and ~90 days (2 months ± 0.5 month)
+  return `${Math.floor(diff / 86400)} kun`; // Fallback to days for longer durations
+};
 
-  // Agar foydalanuvchi kirmagan bo'lsa
+  // Redirect to login if no user is found
   if (!user) {
     return (
       <div className="login-required">
@@ -142,7 +142,7 @@ const Menu = () => {
     <div className="main-container">
       <Sidebar />
       <div className="content">
-        {/* Vaqt va foydalanuvchi ma'lumotlari */}
+        {/* Time and User Info */}
         <div className="time-user-info">
           <div className="current-time">
             <span>{haftaKunlari[currentTime.getDay()]}, </span>
@@ -152,7 +152,6 @@ const Menu = () => {
             <span>{currentTime.getMinutes().toString().padStart(2, '0')}:</span>
             <span>{currentTime.getSeconds().toString().padStart(2, '0')}</span>
           </div>
-          
           {user && (
             <div className="user-info">
               <span className="username">{user.ism}</span>
@@ -160,18 +159,17 @@ const Menu = () => {
             </div>
           )}
         </div>
-        
-        {/* Sarlavha va qidiruv paneli */}
+
+        {/* Header and Search Bar */}
         <div className="menu-header">
           <h2>Salom, {user.ism}! Mahsulotlar ro'yxati</h2>
           <div className="search-container">
-            <button 
+            <button
               className="barcode-search-btn"
               onClick={() => setShowScanner(true)}
             >
               <i className="fas fa-barcode"></i> Shtrix orqali qidirish
             </button>
-            
             <div className="search-bar">
               <input
                 type="text"
@@ -183,22 +181,22 @@ const Menu = () => {
             </div>
           </div>
         </div>
-        
-        {/* Tablar */}
+
+        {/* Tabs */}
         <div className="tabs">
           <button className="active">Mahsulotlar ro'yxati</button>
           <button onClick={() => navigate('/orders')}>Sotuv statistikasi</button>
           <button onClick={() => navigate('/add-product')}>Yangi mahsulot qo'shish</button>
           <button onClick={() => navigate('/cashier')}>Kassir</button>
         </div>
-        
-        {/* Asosiy kontent */}
+
+        {/* Products Section */}
         <div className="menu-content">
           <div className="products-section">
             <div className="products-header">
               <h3>Mahsulotlar ({filteredProducts.length})</h3>
               <div className="products-actions">
-                <button 
+                <button
                   onClick={() => navigate('/add-product')}
                   className="add-product-btn"
                 >
@@ -206,7 +204,7 @@ const Menu = () => {
                 </button>
               </div>
             </div>
-            
+
             {filteredProducts.length > 0 ? (
               <div className="products-grid">
                 {filteredProducts.map((product) => (
@@ -229,7 +227,7 @@ const Menu = () => {
                     <div className="product-info">
                       <h4>{product.nomi}</h4>
                       <div className="product-meta">
-                        <span className="price">{product.narx ? product.narx.toLocaleString() + ' so\'m' : 'Narx belgilanmagan'}</span>
+                        <span className="price">{product.narx ? product.narx.toLocaleString() + " so'm" : 'Narx belgilanmagan'}</span>
                         <span className={`stock ${product.soni <= 0 ? 'out-of-stock' : ''}`}>
                           Qoldiq: {product.soni} ta
                         </span>
@@ -247,7 +245,7 @@ const Menu = () => {
               <div className="no-products">
                 <i className="fas fa-box-open"></i>
                 <p>Hech qanday mahsulot topilmadi</p>
-                <button 
+                <button
                   onClick={() => navigate('/add-product')}
                   className="add-product-btn"
                 >
@@ -259,21 +257,19 @@ const Menu = () => {
         </div>
       </div>
 
-      {/* Mahsulot tafsilotlari modali */}
+      {/* Product Detail Modal */}
       {showProductDetail && selectedProduct && (
         <div className="modal-overlay">
           <div className="product-detail-modal">
             <button className="close-modal" onClick={closeProductDetail}>
               &times;
             </button>
-            
             <div className="modal-header">
               <h3>{selectedProduct.nomi}</h3>
               <span className={`product-status ${selectedProduct.soni <= 0 ? 'out-of-stock' : 'in-stock'}`}>
                 {selectedProduct.soni <= 0 ? 'Qolmagan' : 'Sotuvda'}
               </span>
             </div>
-            
             <div className="modal-body">
               {selectedProduct.rasm ? (
                 <img
@@ -286,48 +282,41 @@ const Menu = () => {
                   <i className="fas fa-box-open"></i>
                 </div>
               )}
-              
               <div className="detail-info">
                 <div className="detail-row">
                   <span className="detail-label">Narxi:</span>
                   <span className="detail-value">
-                    {selectedProduct.narx ? selectedProduct.narx.toLocaleString() + ' so\'m' : 'Narx belgilanmagan'}
+                    {selectedProduct.narx ? selectedProduct.narx.toLocaleString() + " so'm" : 'Narx belgilanmagan'}
                   </span>
                 </div>
-                
                 <div className="detail-row">
                   <span className="detail-label">Qoldiq:</span>
                   <span className={`detail-value ${selectedProduct.soni <= 0 ? 'out-of-stock' : ''}`}>
                     {selectedProduct.soni} ta
                   </span>
                 </div>
-                
                 <div className="detail-row">
                   <span className="detail-label">Mahsulot kodi:</span>
                   <span className="detail-value">{selectedProduct.kodi || 'Belgilanmagan'}</span>
                 </div>
-                
                 {selectedProduct.shtrix_kod && (
                   <div className="detail-row">
                     <span className="detail-label">Shtrix kod:</span>
                     <span className="detail-value">{selectedProduct.shtrix_kod}</span>
                   </div>
                 )}
-                
                 {selectedProduct.bolim && (
                   <div className="detail-row">
                     <span className="detail-label">Bo'lim:</span>
                     <span className="detail-value">{selectedProduct.bolim}</span>
                   </div>
                 )}
-                
                 {selectedProduct.izoh && (
                   <div className="detail-row">
                     <span className="detail-label">Qo'shimcha ma'lumot:</span>
                     <span className="detail-value">{selectedProduct.izoh}</span>
                   </div>
                 )}
-                
                 <div className="detail-row">
                   <span className="detail-label">Yaratilgan sana:</span>
                   <span className="detail-value">
@@ -336,7 +325,6 @@ const Menu = () => {
                 </div>
               </div>
             </div>
-            
             <div className="modal-footer">
               <button
                 onClick={() => navigate(`/edit-product/${selectedProduct.id}`)}
@@ -352,7 +340,7 @@ const Menu = () => {
         </div>
       )}
 
-      {/* Shtrix-kod skaneri modali */}
+      {/* Barcode Scanner Modal */}
       {showScanner && (
         <div className="scanner-modal">
           <div className="scanner-content">
@@ -360,7 +348,7 @@ const Menu = () => {
             <p>Kameraga shtrix-kodni ko'rsating</p>
             <video ref={videoRef} />
             <canvas ref={canvasRef} style={{ display: 'none' }} />
-            <button 
+            <button
               className="close-scanner-btn"
               onClick={() => setShowScanner(false)}
             >

@@ -3,6 +3,8 @@ import './Cashier.css';
 import Sidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
 import jsQR from 'jsqr';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 const Cashier = () => {
   const [cart, setCart] = useState([]);
@@ -19,18 +21,16 @@ const Cashier = () => {
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
-  // Load products and categories from localStorage
+  // Mahsulotlarni localStorage'dan yuklash
   useEffect(() => {
     const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
     setProducts(storedProducts);
-    
-    // Focus search input on load
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
   }, []);
 
-  // Scanner effect
+  // Skaner effekti
   useEffect(() => {
     if (showScanner) {
       startScanner();
@@ -40,26 +40,22 @@ const Cashier = () => {
     return () => stopScanner();
   }, [showScanner]);
 
-  // Keyboard shortcuts
+  // Klaviatura qisqa yo'llari
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Focus search on Ctrl+F
       if (e.ctrlKey && e.key === 'f') {
         e.preventDefault();
         searchInputRef.current?.focus();
       }
-      // Open scanner on Ctrl+B
       if (e.ctrlKey && e.key === 'b') {
         e.preventDefault();
         setShowScanner(true);
       }
-      // Clear cart on Ctrl+D
       if (e.ctrlKey && e.key === 'd') {
         e.preventDefault();
         clearCart();
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
@@ -101,17 +97,11 @@ const Cashier = () => {
         const code = jsQR(imageData.data, imageData.width, imageData.height);
 
         if (code) {
-          const product = products.find(p => p.shtrix_kod === code.data);
-          if (product) {
-            if (product.soni <= 0) {
-              alert(`${product.nomi} omborda mavjud emas!`);
-            } else {
-              addToCart(product);
-              setShowScanner(false);
-            }
-          } else {
-            alert("Shtrix-kod ro'yxatda topilmadi!");
+          setSearchTerm(code.data);
+          if (searchInputRef.current) {
+            searchInputRef.current.focus();
           }
+          setShowScanner(false);
         }
       }
       if (showScanner) requestAnimationFrame(scan);
@@ -119,13 +109,10 @@ const Cashier = () => {
     requestAnimationFrame(scan);
   };
 
-  // Get unique categories
   const categories = useMemo(() => {
-    const allCategories = ['all', ...new Set(products.map(p => p.bolim).filter(Boolean))];
-    return allCategories;
+    return ['all', ...new Set(products.map(p => p.bolim).filter(Boolean))];
   }, [products]);
 
-  // Filter products by search term and category
   const filteredProducts = useMemo(() => {
     const term = searchTerm.toLowerCase();
     return products.filter(product => {
@@ -133,15 +120,12 @@ const Cashier = () => {
         product.nomi.toLowerCase().includes(term) ||
         product.kodi.toLowerCase().includes(term) ||
         (product.shtrix_kod && product.shtrix_kod.toLowerCase().includes(term));
-      
       const matchesCategory = 
         activeCategory === 'all' || product.bolim === activeCategory;
-      
       return matchesSearch && matchesCategory && product.soni > 0;
     });
   }, [products, searchTerm, activeCategory]);
 
-  // Add product to cart
   const addToCart = (product, quantity = 1) => {
     if (product.soni <= 0) {
       alert(`${product.nomi} omborda mavjud emas!`);
@@ -150,7 +134,6 @@ const Cashier = () => {
 
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id);
-      
       if (existingItem) {
         const newQuantity = existingItem.quantity + quantity;
         if (newQuantity > product.soni) {
@@ -170,7 +153,6 @@ const Cashier = () => {
     });
   };
 
-  // Update cart quantity
   const updateCartQuantity = (id, newQuantity) => {
     if (newQuantity < 1) {
       removeFromCart(id);
@@ -188,26 +170,98 @@ const Cashier = () => {
     ));
   };
 
-  // Remove item from cart
   const removeFromCart = (id) => {
     setCart(cart.filter(item => item.id !== id));
   };
 
-  // Clear entire cart
   const clearCart = () => {
     if (cart.length > 0 && window.confirm("Haqiqatan ham savatni tozalamoqchimisiz?")) {
       setCart([]);
     }
   };
 
-  // Calculate totals
   const { subtotal, total } = useMemo(() => {
     const subtotal = cart.reduce((sum, item) => sum + item.narx * item.quantity, 0);
     const total = subtotal * (1 - discount / 100);
     return { subtotal, total };
   }, [cart, discount]);
 
-  // Complete sale
+  const generateReceipt = (sale) => {
+    const doc = new jsPDF();
+    const date = new Date(sale.date).toLocaleString();
+    
+    // Do'kon sarlavhasi
+    doc.setFontSize(18);
+    doc.text("MY SHOP", 105, 15, { align: 'center' });
+    doc.setFontSize(12);
+    doc.text("123 Main Street, Tashkent", 105, 22, { align: 'center' });
+    doc.text("Tel: +998901234567", 105, 28, { align: 'center' });
+    
+    // Chek ma'lumotlari
+    doc.setFontSize(10);
+    doc.text(`Chek #: ${sale.id}`, 14, 40);
+    doc.text(`Sana: ${date}`, 14, 46);
+    if (sale.customer) {
+      doc.text(`Mijoz: ${sale.customer}`, 14, 52);
+    }
+    
+    // Chiziq ajratgich
+    doc.line(10, 58, 200, 58);
+    
+    // Jadval sarlavhalari
+    const headers = [['Nomi', 'Narx', 'Soni', 'Jami']];
+    
+    // Jadval ma'lumotlari
+    const data = sale.items.map(item => [
+      item.nomi,
+      `${item.narx.toLocaleString()} so'm`,
+      item.quantity,
+      `${(item.narx * item.quantity).toLocaleString()} so'm`
+    ]);
+    
+    // Jadval qo'shish
+    doc.autoTable({
+      startY: 60,
+      head: headers,
+      body: data,
+      theme: 'grid',
+      headStyles: { fillColor: [41, 128, 185] },
+      styles: { fontSize: 9 },
+      columnStyles: {
+        0: { cellWidth: 80 },
+        1: { cellWidth: 40 },
+        2: { cellWidth: 20 },
+        3: { cellWidth: 40 }
+      }
+    });
+    
+    // Umumiy hisob
+    const finalY = doc.lastAutoTable.finalY + 10;
+    doc.text(`Jami: ${sale.subtotal.toLocaleString()} so'm`, 14, finalY);
+    if (sale.discount > 0) {
+      doc.text(`Chegirma: ${sale.discount}%`, 14, finalY + 6);
+      doc.text(`Yakuniy summa: ${sale.total.toLocaleString()} so'm`, 14, finalY + 12);
+    }
+    doc.text(`To'lov usuli: ${getPaymentMethodName(sale.paymentMethod)}`, 14, finalY + 18);
+    
+    // Footer
+    doc.setFontSize(10);
+    doc.text("Rahmat sotib olganingiz uchun!", 105, finalY + 30, { align: 'center' });
+    doc.text("Qaytib kelishingizni kutamiz", 105, finalY + 36, { align: 'center' });
+    
+    // PDF ni saqlash
+    doc.save(`chek_${sale.id}.pdf`);
+  };
+
+  const getPaymentMethodName = (method) => {
+    switch (method) {
+      case 'cash': return 'Naqd';
+      case 'card': return 'Karta';
+      case 'transfer': return "O'tkazma";
+      default: return method;
+    }
+  };
+
   const completeSale = async () => {
     if (cart.length === 0) {
       alert("Savat bo'sh!");
@@ -226,7 +280,7 @@ const Cashier = () => {
       note,
     };
 
-    // Update products stock
+    // Mahsulotlar zahirasini yangilash
     const updatedProducts = products.map(product => {
       const cartItem = cart.find(item => item.id === product.id);
       return cartItem 
@@ -234,24 +288,32 @@ const Cashier = () => {
         : product;
     });
 
-    // Save to localStorage
+    // Yangilangan mahsulotlarni localStorage'ga saqlash
     localStorage.setItem('products', JSON.stringify(updatedProducts));
+
+    // Sotuvni sotuvlar tarixiga saqlash
     const sales = JSON.parse(localStorage.getItem('sales')) || [];
     localStorage.setItem('sales', JSON.stringify([...sales, sale]));
 
-    // Send to Telegram (optional)
-    await sendToTelegram(sale);
+    // Kunlik hisobotga saqlash
+    const currentDate = new Date().toISOString().split('T')[0];
+    const dailyReports = JSON.parse(localStorage.getItem('dailyReports')) || {};
+    const dailyReport = dailyReports[currentDate] || { date: currentDate, sales: [] };
+    dailyReport.sales.push(sale);
+    dailyReport.totalAmount = dailyReport.sales.reduce((sum, s) => sum + s.total, 0);
+    dailyReport.totalItems = dailyReport.sales.reduce((sum, s) => sum + s.items.reduce((sum, item) => sum + item.quantity, 0), 0);
+    dailyReports[currentDate] = dailyReport;
+    localStorage.setItem('dailyReports', JSON.stringify(dailyReports));
 
-    // Reset and notify
+    // Chek generatsiya qilish va saqlash
+    generateReceipt(sale);
+
+    // Tozalash va bildirish
     setCart([]);
     setCustomer('');
     setDiscount(0);
     setNote('');
-    alert("Sotuv muvaffaqiyatli yakunlandi!");
-  };
-
-  const sendToTelegram = async (sale) => {
-    // Your Telegram bot implementation here
+    alert("Sotuv muvaffaqiyatli yakunlandi! Chek yuklab olindi.");
   };
 
   return (
@@ -280,6 +342,7 @@ const Cashier = () => {
         <div className="tabs">
           <button onClick={() => navigate('/menu')}>Tovarlar</button>
           <button onClick={() => navigate('/orders')}>Sotuvlar</button>
+          <button onClick={() => navigate('/daily-report')}>Kunlik Hisobot</button>
           <button className="active">Kassir</button>
         </div>
 

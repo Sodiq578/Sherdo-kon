@@ -1,96 +1,140 @@
-/* Asosiy stil */
+/* General Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  scroll-behavior: smooth;
+}
+
+/* Main Container */
 .main-container {
   display: flex;
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background: linear-gradient(180deg, #f5f7fa 0%, #e9ecef 100%);
+  overflow-x: hidden;
 }
 
+/* Content Area */
 .content {
   flex: 1;
-  padding: 20px;
+  padding: 1.5rem;
   margin-left: 250px;
+  transition: margin-left 0.3s ease;
 }
 
-/* Vaqt va foydalanuvchi ma'lumotlari */
+/* Time and User Info */
 .time-user-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 10px 15px;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .current-time {
-  font-size: 14px;
+  font-size: 0.9rem;
   color: #555;
+  font-weight: 500;
 }
 
 .user-info {
   display: flex;
-  gap: 15px;
+  gap: 1rem;
+  align-items: center;
 }
 
 .username {
   font-weight: 600;
   color: #2c3e50;
+  font-size: 1rem;
 }
 
 .registration-time {
-  font-size: 13px;
+  font-size: 0.85rem;
   color: #7f8c8d;
 }
 
-/* Sarlavha va qidiruv */
+
+
+
+
+
+
+
+/* Header and Search */
 .menu-header {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0;
 }
 
 .menu-header h2 {
   color: #2c3e50;
-  margin-bottom: 10px;
+  font-size: clamp(1.25rem, 3.5vw, 1.5rem); /* Scales between 1.25rem and 1.5rem */
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+  text-align: left;
 }
 
 .search-container {
   display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
+  flex-direction: row;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap; /* Allows wrapping on smaller screens */
 }
 
 .barcode-search-btn {
-  background: #3498db;
+  background: linear-gradient(45deg, #3498db, #2980b9);
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 0.75rem 1rem;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  transition: all 0.2s;
+  gap: 0.5rem;
+  font-size: clamp(0.85rem, 2.5vw, 0.9rem); /* Scales font size */
+  transition: all 0.2s ease;
+  min-height: 44px; /* Accessible touch target */
+  min-width: 150px; /* Prevents button from shrinking too much */
 }
 
 .barcode-search-btn:hover {
-  background: #2980b9;
-  transform: translateY(-1px);
+  background: linear-gradient(45deg, #2980b9, #1f6391);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.barcode-search-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .search-bar {
   flex: 1;
   position: relative;
+  min-width: 200px; /* Ensures search bar doesn't collapse too much */
 }
 
 .search-bar input {
   width: 100%;
-  padding: 10px 15px;
-  padding-right: 40px;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
   border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 14px;
-  transition: all 0.2s;
+  font-size: clamp(0.85rem, 2.5vw, 0.9rem); /* Scales font size */
+  transition: all 0.2s ease;
+  background: #fff;
 }
 
 .search-bar input:focus {
@@ -101,102 +145,194 @@
 
 .search-bar i {
   position: absolute;
-  right: 15px;
+  right: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
   color: #7f8c8d;
+  font-size: 1rem;
 }
 
-/* Tablar */
+/* Responsive Design for menu-header */
+@media (max-width: 768px) {
+  .menu-header {
+    margin-bottom: 1rem;
+  }
+
+  .menu-header h2 {
+    font-size: clamp(1.1rem, 3vw, 1.25rem);
+    text-align: center; /* Center title on smaller screens */
+  }
+
+  .search-container {
+    flex-direction: column; /* Stack vertically on mobile */
+    align-items: stretch;
+  }
+
+  .barcode-search-btn {
+    width: 100%;
+    justify-content: center;
+    min-width: unset; /* Allow full width */
+  }
+
+  .search-bar {
+    min-width: unset; /* Allow search bar to take full width */
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-header h2 {
+    font-size: clamp(1rem, 2.8vw, 1.1rem);
+  }
+
+  .barcode-search-btn,
+  .search-bar input {
+    font-size: clamp(0.8rem, 2.2vw, 0.85rem);
+  }
+
+  .search-bar input {
+    padding: 0.65rem 2.2rem 0.65rem 0.8rem;
+  }
+
+  .search-bar i {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .menu-header h2 {
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+  }
+
+  .barcode-search-btn,
+  .search-bar input {
+    font-size: clamp(0.75rem, 2vw, 0.8rem);
+    padding: 0.6rem 0.75rem;
+  }
+
+  .search-bar i {
+    right: 0.6rem;
+    font-size: 0.85rem;
+  }
+}
+
+
+
+
+
+
+/* Tabs */
 .tabs {
   display: flex;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
   border-bottom: 1px solid #ddd;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: thin;
+  scrollbar-color: #3498db #f5f7fa;
+}
+
+.tabs::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tabs::-webkit-scrollbar-thumb {
+  background: #3498db;
+  border-radius: 3px;
 }
 
 .tabs button {
-  padding: 10px 20px;
+  padding: 0.75rem 1.25rem;
   background: none;
   border: none;
   border-bottom: 3px solid transparent;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.9rem;
   color: #7f8c8d;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  min-height: 44px; /* Accessible touch target */
 }
 
 .tabs button.active {
   color: #2c3e50;
   border-bottom-color: #3498db;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .tabs button:hover {
   color: #3498db;
+  background: rgba(52, 152, 219, 0.05);
 }
 
-/* Mahsulotlar seksiyasi */
+/* Products Section */
 .products-section {
   background: #fff;
   border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .products-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .products-header h3 {
   color: #2c3e50;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
 .products-actions {
   display: flex;
-  gap: 10px;
+  gap: 0.75rem;
 }
 
 .add-product-btn {
-  background: #27ae60;
+  background: linear-gradient(45deg, #27ae60, #219653);
   color: white;
   border: none;
-  padding: 8px 15px;
+  padding: 0.5rem 1rem;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  transition: all 0.2s;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  min-height: 44px; /* Accessible touch target */
 }
 
 .add-product-btn:hover {
-  background: #219955;
-  transform: translateY(-1px);
+  background: linear-gradient(45deg, #219653, #1b7f46);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Mahsulotlar gridi */
+/* Products Grid */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
 }
 
 .product-card {
   border: 1px solid #eee;
   border-radius: 8px;
-  padding: 15px;
+  padding: 1rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   background: #fff;
+  position: relative;
+  overflow: hidden;
 }
 
 .product-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   border-color: #3498db;
 }
 
@@ -211,7 +347,7 @@
   height: 120px;
   object-fit: contain;
   border-radius: 4px;
-  margin-bottom: 10px;
+  margin-bottom: 0.75rem;
   background: #f9f9f9;
 }
 
@@ -223,14 +359,14 @@
   justify-content: center;
   background: #f9f9f9;
   border-radius: 4px;
-  margin-bottom: 10px;
+  margin-bottom: 0.75rem;
   color: #bdc3c7;
-  font-size: 30px;
+  font-size: 1.5rem;
 }
 
 .product-info h4 {
-  font-size: 15px;
-  margin-bottom: 8px;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
   color: #2c3e50;
   font-weight: 500;
   white-space: nowrap;
@@ -241,17 +377,16 @@
 .product-meta {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 5px;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
 }
 
 .price {
   color: #e74c3c;
   font-weight: 600;
-  font-size: 14px;
 }
 
 .stock {
-  font-size: 13px;
   color: #7f8c8d;
 }
 
@@ -260,74 +395,79 @@
 }
 
 .product-barcode {
-  font-size: 12px;
+  font-size: 0.8rem;
   color: #7f8c8d;
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-top: 5px;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
 }
 
-/* Mahsulot yo'q */
+/* No Products */
 .no-products {
   text-align: center;
-  padding: 40px 20px;
+  padding: 2.5rem 1rem;
   color: #7f8c8d;
 }
 
 .no-products i {
-  font-size: 50px;
+  font-size: 2.5rem;
   color: #bdc3c7;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 
 .no-products p {
-  margin-bottom: 20px;
-  font-size: 16px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
 }
 
-/* Modal oynasi */
+/* Modal Overlay */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 1rem;
 }
 
+/* Product Detail Modal */
 .product-detail-modal {
   background: #fff;
   border-radius: 8px;
-  width: 90%;
+  width: 100%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   animation: modalFadeIn 0.3s ease-out;
 }
 
 .modal-header {
-  padding: 20px;
+  padding: 1.25rem;
   border-bottom: 1px solid #eee;
   position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .modal-header h3 {
   color: #2c3e50;
+  font-size: 1.25rem;
   margin: 0;
 }
 
 .product-status {
-  font-size: 13px;
-  padding: 4px 8px;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
   border-radius: 4px;
   font-weight: 500;
 }
@@ -344,19 +484,20 @@
 
 .close-modal {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 0.75rem;
+  right: 0.75rem;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 1.5rem;
   color: #7f8c8d;
   cursor: pointer;
-  width: 30px;
-  height: 30px;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  transition: all 0.2s ease;
 }
 
 .close-modal:hover {
@@ -365,21 +506,15 @@
 }
 
 .modal-body {
-  padding: 20px;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-@media (min-width: 768px) {
-  .modal-body {
-    flex-direction: row;
-  }
+  gap: 1.25rem;
 }
 
 .detail-image {
   width: 100%;
-  max-height: 250px;
+  max-height: 200px;
   object-fit: contain;
   border-radius: 6px;
   background: #f9f9f9;
@@ -387,14 +522,14 @@
 
 .detail-image-placeholder {
   width: 100%;
-  height: 250px;
+  height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #f9f9f9;
   border-radius: 6px;
   color: #bdc3c7;
-  font-size: 50px;
+  font-size: 2.5rem;
 }
 
 .detail-info {
@@ -402,20 +537,20 @@
 }
 
 .detail-row {
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 
 .detail-label {
   font-weight: 600;
   color: #2c3e50;
   display: block;
-  margin-bottom: 5px;
-  font-size: 14px;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
 }
 
 .detail-value {
   color: #34495e;
-  font-size: 15px;
+  font-size: 0.95rem;
 }
 
 .detail-value.out-of-stock {
@@ -423,111 +558,118 @@
 }
 
 .modal-footer {
-  padding: 15px 20px;
+  padding: 1rem 1.25rem;
   border-top: 1px solid #eee;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 0.75rem;
 }
 
-.edit-btn, .close-btn {
-  padding: 8px 15px;
+.edit-btn,
+.close-btn {
+  padding: 0.5rem 1rem;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.2s;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  min-height: 44px; /* Accessible touch target */
 }
 
 .edit-btn {
-  background: #3498db;
+  background: linear-gradient(45deg, #3498db, #2980b9);
   color: white;
 }
 
 .edit-btn:hover {
-  background: #2980b9;
-  transform: translateY(-1px);
+  background: linear-gradient(45deg, #2980b9, #1f6391);
+  transform: translateY(-2px);
 }
 
 .close-btn {
-  background: #e74c3c;
+  background: linear-gradient(45deg, #e74c3c, #c0392b);
   color: white;
 }
 
 .close-btn:hover {
-  background: #c0392b;
-  transform: translateY(-1px);
+  background: linear-gradient(45deg, #c0392b, #a12821);
+  transform: translateY(-2px);
 }
 
-/* Skaner modali */
+/* Scanner Modal */
 .scanner-modal {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 1rem;
 }
 
 .scanner-content {
   background: white;
-  padding: 20px;
+  padding: 1.5rem;
   border-radius: 8px;
-  width: 90%;
+  width: 100%;
   max-width: 500px;
   text-align: center;
 }
 
 .scanner-content h3 {
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
   color: #2c3e50;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 0.5rem;
+  font-size: 1.25rem;
 }
 
 .scanner-content p {
   color: #7f8c8d;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
 }
 
 .scanner-content video {
   width: 100%;
   max-height: 60vh;
   border-radius: 6px;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
   background: #000;
+  object-fit: cover;
 }
 
 .close-scanner-btn {
-  background: #e74c3c;
+  background: linear-gradient(45deg, #e74c3c, #c0392b);
   color: white;
   border: none;
-  padding: 8px 15px;
+  padding: 0.5rem 1rem;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   margin: 0 auto;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  min-height: 44px; /* Accessible touch target */
 }
 
 .close-scanner-btn:hover {
-  background: #c0392b;
-  transform: translateY(-1px);
+  background: linear-gradient(45deg, #c0392b, #a12821);
+  transform: translateY(-2px);
 }
 
-/* Animatsiyalar */
+/* Animations */
 @keyframes modalFadeIn {
   from {
     opacity: 0;
@@ -539,28 +681,42 @@
   }
 }
 
-/* Responsivlik */
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .content {
+    margin-left: 0; /* Adjust based on sidebar behavior */
+  }
+}
+
 @media (max-width: 768px) {
   .content {
-    margin-left: 0;
-    padding: 15px;
+    padding: 1rem;
   }
-  
+
   .search-container {
     flex-direction: column;
   }
-  
+
   .barcode-search-btn {
     width: 100%;
     justify-content: center;
   }
-  
+
   .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
-  
+
   .modal-body {
     flex-direction: column;
+  }
+
+  .product-detail-modal {
+    max-width: 95%;
+  }
+
+  .detail-image,
+  .detail-image-placeholder {
+    max-height: 150px;
   }
 }
 
@@ -568,20 +724,114 @@
   .time-user-info {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 0.75rem;
   }
-  
+
+  .menu-header h2 {
+    font-size: 1.25rem;
+  }
+
   .products-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
-  
-  .tabs {
-    overflow-x: auto;
-    padding-bottom: 5px;
-  }
-  
+
   .tabs button {
-    padding: 8px 12px;
-    font-size: 13px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
   }
+
+  .products-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .product-card {
+    padding: 0.75rem;
+  }
+
+  .product-info h4 {
+    font-size: 0.9rem;
+  }
+
+  .product-meta {
+    font-size: 0.8rem;
+  }
+
+  .product-barcode {
+    font-size: 0.75rem;
+  }
+
+  .scanner-content {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 320px) {
+  .search-bar input {
+    font-size: 0.85rem;
+  }
+
+  .barcode-search-btn,
+  .add-product-btn,
+  .edit-btn,
+  .close-btn,
+  .close-scanner-btn {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .detail-label,
+  .detail-value {
+    font-size: 0.85rem;
+  }
+}
+
+/* Login Required Styles */
+.login-required {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+.login-message {
+  text-align: center;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  max-width: 90%;
+}
+
+.login-message h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.login-message p {
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.login-message button {
+  background: linear-gradient(45deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.login-message button:hover {
+  background: linear-gradient(45deg, #2980b9, #1f6391);
+  transform: translateY(-2px);
 }

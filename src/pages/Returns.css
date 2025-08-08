@@ -1,146 +1,190 @@
-/* Returns.css - Specific styles for Returns component */
+/* Returns.css - Complete responsive styles for Returns component */
 
-.main-container .content {
-  padding: 20px;
-  margin-left: 250px;
+/* Base container styles */
+.main-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f5f5;
 }
 
+.main-container .content {
+  flex: 1;
+  padding: 24px;
+  margin-left: 250px;
+  transition: margin-left 0.3s ease;
+}
+
+/* Header styles */
 .returns-header {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #fff;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .returns-header h2 {
   margin: 0;
-  color: #2c3e50;
-  font-size: 1.5rem;
+  color: #1a202c;
+  font-size: 1.75rem;
+  font-weight: 600;
 }
 
+/* Returns container layout */
 .returns-container {
   display: flex;
-  gap: 20px;
+  gap: 24px;
+  flex-wrap: wrap;
 }
 
-.new-return {
-  flex: 1;
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
+.new-return,
 .returns-history {
   flex: 1;
-  background: #fff;
+  min-width: 0;
+  background: #ffffff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
+/* Form styles */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   font-weight: 500;
-  color: #2c3e50;
+  color: #1a202c;
+  font-size: 0.95rem;
 }
 
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: #fff;
+  transition: border-color 0.2s ease;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
 }
 
 .form-group textarea {
-  min-height: 80px;
+  min-height: 100px;
   resize: vertical;
 }
 
+/* Return items list */
 .return-items {
-  max-height: 300px;
+  max-height: 320px;
   overflow-y: auto;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  padding: 10px;
+  border: 1px solid #edf2f7;
+  border-radius: 6px;
+  padding: 12px;
+  background: #fafafa;
 }
 
 .return-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #f5f5f5;
+  padding: 12px;
+  border-bottom: 1px solid #edf2f7;
+  transition: background 0.2s ease;
 }
 
 .return-item:last-child {
   border-bottom: none;
 }
 
+.return-item:hover {
+  background: #f7fafc;
+}
+
 .item-info h4 {
-  margin: 0 0 5px 0;
-  font-size: 14px;
+  margin: 0 0 6px 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #2d3748;
 }
 
 .item-info p {
   margin: 0;
-  font-size: 13px;
-  color: #7f8c8d;
+  font-size: 0.85rem;
+  color: #718096;
 }
 
 .item-quantity input {
-  width: 60px;
-  padding: 6px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  width: 70px;
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
   text-align: center;
+  font-size: 0.9rem;
 }
 
+.item-quantity input:focus {
+  outline: none;
+  border-color: #3182ce;
+}
+
+/* Button styles */
 .process-return-btn {
   width: 100%;
-  padding: 10px;
-  background: #e74c3c;
+  padding: 12px;
+  background: #e53e3e;
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.2s ease, transform 0.1s ease;
 }
 
 .process-return-btn:hover {
-  background: #c0392b;
+  background: #c53030;
+  transform: translateY(-1px);
+}
+
+.process-return-btn:active {
+  transform: translateY(0);
 }
 
 .process-return-btn:disabled {
-  background: #95a5a6;
+  background: #a0aec0;
   cursor: not-allowed;
+  transform: none;
 }
 
+/* Table styles */
 .returns-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 0.9rem;
 }
 
 .returns-table th {
-  background: #3498db;
+  background: #2b6cb0;
   color: white;
   padding: 12px;
   text-align: left;
+  font-weight: 600;
 }
 
 .returns-table td {
   padding: 12px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #edf2f7;
+  color: #2d3748;
 }
 
 .returns-table tr:last-child td {
@@ -148,28 +192,101 @@
 }
 
 .returns-table tr:hover {
-  background: #f8f9fa;
+  background: #f7fafc;
 }
 
+/* Empty state */
 .no-returns {
   text-align: center;
-  padding: 40px;
-  color: #7f8c8d;
+  padding: 48px 24px;
+  color: #718096;
+  font-size: 1rem;
 }
 
 /* Responsive styles */
+@media (max-width: 1024px) {
+  .main-container .content {
+    margin-left: 200px;
+  }
+  
+  .returns-header h2 {
+    font-size: 1.5rem;
+  }
+}
+
 @media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+  }
+  
   .main-container .content {
     margin-left: 0;
-    padding: 15px;
+    padding: 16px;
   }
   
   .returns-container {
     flex-direction: column;
   }
   
+  .new-return,
+  .returns-history {
+    width: 100%;
+  }
+  
   .returns-table {
     display: block;
     overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .returns-table th,
+  .returns-table td {
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .returns-header {
+    padding: 12px;
+  }
+  
+  .returns-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .new-return,
+  .returns-history {
+    padding: 16px;
+  }
+  
+  .form-group select,
+  .form-group textarea {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+  
+  .process-return-btn {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+  
+  .return-items {
+    max-height: 280px;
+  }
+  
+  .return-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .item-quantity input {
+    width: 100%;
+  }
+  
+  .returns-table th,
+  .returns-table td {
+    padding: 8px;
+    font-size: 0.85rem;
   }
 }

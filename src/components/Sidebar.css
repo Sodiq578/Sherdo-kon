@@ -76,14 +76,22 @@
 
 /* Navigation section titles */
 .nav-section-title {
-  padding: 10px 20px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280; /* Muted gray for section titles */
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 700; /* Bolder for emphasis */
+  color: #ffffff; /* White text for contrast */
+  background: #4b5563; /* Darker gray background to stand out */
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin: 8px 0;
-  border-top: 1px solid #e5e7eb;
+  letter-spacing: 1px;
+  margin: 10px 0;
+  border-top: 1px solid #d1d5db;
+  border-bottom: 1px solid #d1d5db;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.nav-section-title:hover {
+  background: #6b7280; /* Lighter gray on hover for interactivity */
+  transform: translateX(4px); /* Subtle shift for dynamic effect */
 }
 
 /* Navigation items */
@@ -93,16 +101,18 @@
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
   font-size: 14px;
   color: #374151;
   border-radius: 6px; /* Rounded edges */
   margin: 0 8px;
 }
 
-.nav-item:hover, .nav-item:focus {
+.nav-item:hover,
+.nav-item:focus {
   background: #dbeafe; /* Light blue hover */
   color: #3b82f6; /* Blue text on hover */
+  transform: translateX(3px); /* Subtle shift for hover effect */
   outline: none;
 }
 
@@ -117,6 +127,7 @@
   background: #3b82f6; /* Blue for active item */
   color: #ffffff;
   font-weight: 500;
+  transform: translateX(0); /* Reset transform for active state */
 }
 
 /* Sidebar footer */
@@ -145,14 +156,16 @@
   color: #374151;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
   border-radius: 6px;
   margin: 0 8px;
 }
 
-.logout-btn:hover, .logout-btn:focus {
+.logout-btn:hover,
+.logout-btn:focus {
   background: #fee2e2; /* Light red for logout hover */
   color: #ef4444; /* Red text on hover */
+  transform: translateX(3px); /* Subtle shift for hover effect */
   outline: none;
 }
 
@@ -161,6 +174,7 @@
   text-align: center;
   font-size: 15px;
 }
+
 /* Burger menu */
 .burger-menu {
   position: fixed;
@@ -178,11 +192,12 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   padding: 6px;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .burger-menu:hover {
   background: #f3f4f6;
+  border-color: #3b82f6; /* Blue border on hover */
 }
 
 .burger-menu span {
@@ -221,11 +236,19 @@
   background: rgba(0, 0, 0, 0.5);
   z-index: 900;
   transition: opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Media Queries */
 @media (min-width: 768px) {
-  .burger-menu, .sidebar-overlay {
+  .burger-menu,
+  .sidebar-overlay {
     display: none;
   }
 
@@ -235,7 +258,9 @@
 }
 
 /* Accessibility */
-.nav-item:focus, .logout-btn:focus {
+.nav-item:focus,
+.logout-btn:focus,
+.nav-section-title:focus {
   outline: 2px solid #3b82f6;
   outline-offset: -2px;
 }
@@ -247,11 +272,24 @@
     border-right: 2px solid #000000;
   }
 
-  .nav-item, .logout-btn {
+  .nav-item,
+  .logout-btn,
+  .nav-section-title {
     color: #000000;
   }
 
-  .nav-item:hover, .nav-item:focus, .logout-btn:hover, .logout-btn:focus {
+  .nav-section-title {
+    background: #000000;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+  }
+
+  .nav-item:hover,
+  .nav-item:focus,
+  .logout-btn:hover,
+  .logout-btn:focus,
+  .nav-section-title:hover,
+  .nav-section-title:focus {
     background: #3b82f6;
     color: #ffffff;
   }

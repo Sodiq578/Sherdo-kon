@@ -27,17 +27,35 @@ ChartJS.register(
 const Stats = () => {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [dailyReports, setDailyReports] = useState({});
   const [timeRange, setTimeRange] = useState('month');
   const [activeTab, setActiveTab] = useState('products');
+  const [filterDate, setFilterDate] = useState('');
+  const [sortBy, setSortBy] = useState('date');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
     setProducts(storedProducts);
 
-    const storedOrders = JSON.parse(localStorage.getItem('orders')) || [];
+    const storedOrders = JSON.parse(localStorage.getItem('sales')) || [];
     setOrders(storedOrders);
+
+    const storedReports = JSON.parse(localStorage.getItem('dailyReports')) || {};
+    setDailyReports(storedReports);
   }, []);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('uz-UZ', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  };
 
   const getTopProducts = () => {
     const productSales = {};
@@ -160,6 +178,40 @@ const Stats = () => {
     };
   };
 
+  // Daily Reports Data
+  const reportList = Object.keys(dailyReports).map(date => ({
+    date,
+    ...dailyReports[date],
+  }));
+
+  const filteredReports = reportList
+    .filter(report => 
+      filterDate ? report.date === filterDate : true
+    )
+    .sort((a, b) => {
+      const multiplier = sortOrder === 'asc' ? 1 : -1;
+      if (sortBy === 'date') {
+        return multiplier * (new Date(a.date) - new Date(b.date));
+      } else if (sortBy === 'totalAmount') {
+        return multiplier * (a.totalAmount - b.totalAmount);
+      } else if (sortBy === 'totalItems') {
+        return multiplier * (a.totalItems - b.totalItems);
+      }
+      return 0;
+    });
+
+  const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
+  const paginatedReports = filteredReports.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   const chartOptions = {
     responsive: true,
     plugins: {
@@ -198,7 +250,7 @@ const Stats = () => {
   };
 
   return (
-    <>
+    <div className="stats-page">
       <Sidebar />
       <div className="content">
         <div className="menu-header">
@@ -217,8 +269,11 @@ const Stats = () => {
 
         <div className="tabs">
           <button onClick={() => navigate('/menu')}>Tovar jadvali</button>
-          <button className="active">Savdo statistikasi</button>
+          <button className={activeTab === 'products' || activeTab === 'sales' || activeTab === 'daily' ? 'active' : ''}>
+            Savdo statistikasi
+          </button>
           <button onClick={() => navigate('/add-product')}>Tovar qo‘shish</button>
+          <button onClick={() => navigate('/cashier')}>Kassir</button>
         </div>
 
         <div className="stats-controls">
@@ -235,28 +290,52 @@ const Stats = () => {
             >
               Savdo ko‘rsatkichlari
             </button>
+            <button
+              onClick={() => setActiveTab('daily')}
+              className={activeTab === 'daily' ? 'active' : ''}
+            >
+              Kunlik hisobotlar
+            </button>
           </div>
 
-          <div className="time-range">
-            <button
-              onClick={() => setTimeRange('day')}
-              className={timeRange === 'day' ? 'active' : ''}
-            >
-              Kun
-            </button>
-            <button
-              onClick={() => setTimeRange('week')}
-              className={timeRange === 'week' ? 'active' : ''}
-            >
-              Hafta
-            </button>
-            <button
-              onClick={() => setTimeRange('month')}
-              className={timeRange === 'month' ? 'active' : ''}
-            >
-              Oy
-            </button>
-          </div>
+          {activeTab === 'sales' && (
+            <div className="time-range">
+              <button
+                onClick={() => setTimeRange('day')}
+                className={timeRange === 'day' ? 'active' : ''}
+              >
+                Kun
+              </button>
+              <button
+                onClick={() => setTimeRange('week')}
+                className={timeRange === 'week' ? 'active' : ''}
+              >
+                Hafta
+              </button>
+              <button
+                onClick={() => setTimeRange('month')}
+                className={timeRange === 'month' ? 'active' : ''}
+              >
+                Oy
+              </button>
+            </div>
+          )}
+
+          {activeTab === 'daily' && (
+            <div className="filters">
+              <input
+                type="date"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+              />
+              <button
+                onClick={() => setFilterDate('')}
+                disabled={!filterDate}
+              >
+                Tozalash
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="stats-content">
@@ -279,9 +358,78 @@ const Stats = () => {
               <Bar data={getSalesData()} options={chartOptions} />
             </div>
           )}
+          {activeTab === 'daily' && (
+            <div className="daily-report-table-container">
+              {paginatedReports.length > 0 ? (
+                <>
+                  <div className="sort-controls">
+                    <label>Saralash:</label>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                    >
+                      <option value="date">Sana</option>
+                      <option value="totalAmount">Jami summa</option>
+                      <option value="totalItems">Jami mahsulotlar</option>
+                    </select>
+                    <select
+                      value={sortOrder}
+                      onChange={(e) => setSortOrder(e.target.value)}
+                    >
+                      <option value="desc">Kamayish</option>
+                      <option value="asc">O'sish</option>
+                    </select>
+                  </div>
+                  <div className="table-wrapper">
+                    <table className="daily-report-table">
+                      <thead>
+                        <tr>
+                          <th>Sana</th>
+                          <th>Sotuvlar soni</th>
+                          <th>Jami mahsulotlar</th>
+                          <th>Jami summa</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginatedReports.map((report) => (
+                          <tr key={report.date}>
+                            <td>{formatDate(report.date)}</td>
+                            <td>{report.sales.length}</td>
+                            <td>{report.totalItems}</td>
+                            <td>{report.totalAmount.toLocaleString('uz-UZ')} UZS</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="pagination-controls">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      Oldingi
+                    </button>
+                    <span>{currentPage} / {totalPages}</span>
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      Keyingi
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="no-results">
+                  <p>
+                    {filterDate ? "Tanlangan sana bo'yicha hisobot topilmadi" : "Hisobotlar topilmadi"}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

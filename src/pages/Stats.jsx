@@ -95,7 +95,7 @@ const Stats = () => {
           {
             label: 'Soatlik savdo (UZS)',
             data: salesByHour,
-            backgroundColor: '#4CAF50',
+            backgroundColor: '#10b981',
             borderColor: '#388E3C',
             borderWidth: 1,
           },

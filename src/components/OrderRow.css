@@ -29,7 +29,7 @@
 .order-price {
   width: 30%;
   text-align: right;
-  color: #4CAF50;
+  color: #10b981;
   font-weight: bold;
 }
 
@@ -47,7 +47,7 @@
 }
 
 .add-btn {
-  background: #4CAF50;
+  background: #10b981;
   color: white;
 }
 

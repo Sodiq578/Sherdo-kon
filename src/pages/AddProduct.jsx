@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Quagga from '@ericblade/quagga2';
 
 const AddProduct = () => {
+  // State declarations
   const [formData, setFormData] = useState({
     nomi: '',
     kodi: '',
@@ -16,6 +17,7 @@ const AddProduct = () => {
     bolim: '',
     id: null,
   });
+  
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -25,18 +27,27 @@ const AddProduct = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [user, setUser] = useState(null);
   const [showScanner, setShowScanner] = useState(false);
+  
   const navigate = useNavigate();
   const videoRef = useRef(null);
 
+  // Constants
   const haftaKunlari = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
   const oylar = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
 
+  // Load data on component mount
   useEffect(() => {
     const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
     const storedCategories = JSON.parse(localStorage.getItem('categories')) || [];
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-    setProducts(storedProducts);
+    // Enhance products with stock status
+    const enhancedProducts = storedProducts.map(product => ({
+      ...product,
+      stockStatus: getStockStatus(product.soni)
+    }));
+
+    setProducts(enhancedProducts);
     setCategories(storedCategories);
     setUser(currentUser);
 
@@ -47,6 +58,7 @@ const AddProduct = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Barcode scanner effect
   useEffect(() => {
     if (showScanner) {
       Quagga.init({
@@ -81,7 +93,7 @@ const AddProduct = () => {
 
       Quagga.onDetected((data) => {
         const code = data.codeResult.code;
-        setFormData((prev) => ({ ...prev, shtrix_kod: code }));
+        setFormData(prev => ({ ...prev, shtrix_kod: code }));
         setShowScanner(false);
         Quagga.stop();
       });
@@ -92,6 +104,14 @@ const AddProduct = () => {
     }
   }, [showScanner]);
 
+  // Helper function to determine stock status
+  const getStockStatus = (quantity) => {
+    if (quantity <= 0) return 'out-of-stock';
+    if (quantity <= 5) return 'low-stock';
+    return 'in-stock';
+  };
+
+  // Calculate registration time
   const calculateRegistrationTime = () => {
     if (!user || !user.createdAt) return "Ma'lumot mavjud emas";
 
@@ -113,6 +133,7 @@ const AddProduct = () => {
     return `${seconds} soniya`;
   };
 
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
     setFormData({
@@ -121,10 +142,12 @@ const AddProduct = () => {
     });
   };
 
+  // Form submission handler
   const handleSubmit = (e) => {
     e.preventDefault();
     const { nomi, kodi, shtrix_kod, narx, soni, id, bolim } = formData;
 
+    // Validation
     if (!nomi || !kodi || !narx || !soni || !bolim) {
       alert("Iltimos, barcha majburiy maydonlarni to'ldiring!");
       return;
@@ -135,6 +158,7 @@ const AddProduct = () => {
       return;
     }
 
+    // Check for duplicate codes
     const isDuplicateCode = products.some(
       (p) => (p.kodi === kodi || (shtrix_kod && p.shtrix_kod === shtrix_kod)) && (!isEditing || p.id !== id)
     );
@@ -144,6 +168,7 @@ const AddProduct = () => {
       return;
     }
 
+    // Create new product object
     const newProduct = {
       id: id || Date.now().toString(),
       nomi,
@@ -151,6 +176,7 @@ const AddProduct = () => {
       shtrix_kod: shtrix_kod || null,
       narx: parseInt(narx),
       soni: parseInt(soni),
+      stockStatus: getStockStatus(parseInt(soni)),
       rasm: formData.rasm
         ? typeof formData.rasm === 'string'
           ? formData.rasm
@@ -162,6 +188,7 @@ const AddProduct = () => {
       updatedAt: new Date().toISOString(),
     };
 
+    // Update products list
     let updatedProducts;
     if (isEditing) {
       updatedProducts = products.map((p) => (p.id === id ? newProduct : p));
@@ -169,13 +196,16 @@ const AddProduct = () => {
       updatedProducts = [...products, newProduct];
     }
 
+    // Save to localStorage
     localStorage.setItem('products', JSON.stringify(updatedProducts));
     setProducts(updatedProducts);
     alert(`${nomi} muvaffaqiyatli ${isEditing ? "tahrirlandi" : "qo'shildi"}!`);
 
+    // Reset form
     resetForm();
   };
 
+  // Add new category
   const addCategory = () => {
     if (newCategory.trim() && !categories.includes(newCategory.trim())) {
       const updatedCategories = [...categories, newCategory.trim()];
@@ -191,6 +221,7 @@ const AddProduct = () => {
     }
   };
 
+  // Edit product
   const editProduct = (product) => {
     setFormData({
       nomi: product.nomi,
@@ -207,6 +238,7 @@ const AddProduct = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Delete product
   const deleteProduct = (product) => {
     if (window.confirm(`Haqiqatan ham "${product.nomi}" mahsulotini o'chirmoqchimisiz? Bu amalni ortga qaytarib bo'lmaydi!`)) {
       const updatedProducts = products.filter((p) => p.id !== product.id);
@@ -218,6 +250,7 @@ const AddProduct = () => {
     }
   };
 
+  // Reset form
   const resetForm = () => {
     setFormData({
       nomi: '',
@@ -233,6 +266,7 @@ const AddProduct = () => {
     setIsEditing(false);
   };
 
+  // Filter products based on search term
   const filteredProducts = products.filter(
     (product) =>
       product.nomi.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -245,6 +279,7 @@ const AddProduct = () => {
     <div className="main-container">
       <Sidebar />
       <div className="content">
+        {/* Time and User Info */}
         <div className="time-user-info">
           <div className="current-time">
             <span>{haftaKunlari[currentTime.getDay()]}, </span>
@@ -262,6 +297,7 @@ const AddProduct = () => {
           )}
         </div>
 
+        {/* Header */}
         <div className="menu-header">
           <h2>Tovar qo'shish</h2>
           <div className="search-bar">
@@ -275,6 +311,7 @@ const AddProduct = () => {
           </div>
         </div>
 
+        {/* Navigation Tabs */}
         <div className="tabs">
           <button onClick={() => navigate('/menu')}>Tovar jadvali</button>
           <button onClick={() => navigate('/orders')}>Savdo statistikasi</button>
@@ -282,10 +319,13 @@ const AddProduct = () => {
           <button onClick={() => navigate('/cashier')}>Kassir</button>
         </div>
 
-        <div className="add-product-container">
-          <form className="add-product-form" onSubmit={handleSubmit}>
+        {/* Main Content */}
+        <div className={`add-product-container ${isEditing ? 'editing-mode' : ''}`}>
+          {/* Product Form */}
+          <form className={`add-product-form ${isEditing ? 'editing-form' : ''}`} onSubmit={handleSubmit}>
             <h3>{isEditing ? 'Tovarni tahrirlash' : 'Yangi tovar qo\'shish'}</h3>
 
+            {/* Product Name */}
             <div className="form-group">
               <label>Tovar nomi *</label>
               <input
@@ -297,6 +337,7 @@ const AddProduct = () => {
               />
             </div>
 
+            {/* Product Code */}
             <div className="form-group">
               <label>Tovar kodi *</label>
               <input
@@ -308,6 +349,7 @@ const AddProduct = () => {
               />
             </div>
 
+            {/* Barcode */}
             <div className="form-group">
               <label>Shtrix-kod (ixtiyoriy)</label>
               <div className="shtrix-kod-container">
@@ -328,6 +370,7 @@ const AddProduct = () => {
               </div>
             </div>
 
+            {/* Price and Quantity */}
             <div className="form-row">
               <div className="form-group">
                 <label>Narxi (so'm) *</label>
@@ -353,6 +396,7 @@ const AddProduct = () => {
               </div>
             </div>
 
+            {/* Category */}
             <div className="form-group">
               <label>Bo'lim *</label>
               <div className="category-select">
@@ -396,6 +440,7 @@ const AddProduct = () => {
               )}
             </div>
 
+            {/* Image */}
             <div className="form-group">
               <label>Rasm (ixtiyoriy)</label>
               <input
@@ -412,6 +457,7 @@ const AddProduct = () => {
               )}
             </div>
 
+            {/* Essential Product Checkbox */}
             <div className="form-checkbox">
               <input
                 type="checkbox"
@@ -425,6 +471,7 @@ const AddProduct = () => {
               </label>
             </div>
 
+            {/* Form Actions */}
             <div className="form-actions">
               <button type="submit" className="submit-btn">
                 {isEditing ? "O'zgarishlarni saqlash" : "Tovar qo'shish"}
@@ -437,6 +484,7 @@ const AddProduct = () => {
             </div>
           </form>
 
+          {/* Barcode Scanner Modal */}
           {showScanner && (
             <div className="scanner-modal">
               <div className="scanner-content">
@@ -452,6 +500,7 @@ const AddProduct = () => {
             </div>
           )}
 
+          {/* Product List */}
           <div className="product-list">
             <h3>Mavjud mahsulotlar ({filteredProducts.length})</h3>
             {filteredProducts.length > 0 ? (
@@ -459,13 +508,13 @@ const AddProduct = () => {
                 {filteredProducts.map((product) => (
                   <div
                     key={product.id}
-                    className={`product-item ${product.kerakli ? 'essential' : ''}`}
+                    className={`product-item ${product.stockStatus} ${product.kerakli ? 'essential' : ''}`}
                   >
                     <div className="product-details">
                       {product.rasm && (
                         <img src={product.rasm} alt={product.nomi} className="product-thumbnail" />
                       )}
-                      <div>
+                      <div className="product-info">
                         <h4>
                           {product.nomi}
                           {product.kerakli && <span className="essential-badge">Kerakli</span>}
@@ -473,7 +522,10 @@ const AddProduct = () => {
                         <p>Kodi: {product.kodi}</p>
                         {product.shtrix_kod && <p>Shtrix-kod: {product.shtrix_kod}</p>}
                         <p>Narxi: {product.narx.toLocaleString()} so'm</p>
-                        <p>Soni: {product.soni}</p>
+                        <p className="stock-info">
+                          Soni: {product.soni} {product.stockStatus === 'out-of-stock' && '(Tugagan)'}
+                          {product.stockStatus === 'low-stock' && '(Kam qolgan)'}
+                        </p>
                         <p>Bo'lim: {product.bolim}</p>
                         <p className="date-info">
                           Qo'shilgan: {new Date(product.createdAt).toLocaleDateString('uz-UZ')}

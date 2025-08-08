@@ -54,7 +54,7 @@
 
 .search-bar input:focus {
   outline: none;
-  border-color: #4CAF50;
+  border-color: #10b981;
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
 }
 
@@ -91,7 +91,7 @@
 
 .tabs button.active,
 .tabs button:hover {
-  background-color: #4CAF50;
+  background-color: #10b981;
   color: #fff;
 }
 
@@ -280,7 +280,7 @@
 .pagination-controls button {
   padding: 8px 16px;
   border: none;
-  background-color: #4CAF50;
+  background-color: #10b981;
   color: #fff;
   border-radius: 8px;
   font-size: 14px;

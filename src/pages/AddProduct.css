@@ -105,20 +105,61 @@ body {
   margin-top: 0.25rem;
 }
 
+
 /* Header and Tabs */
 .menu-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+ 
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.menu-header:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 .menu-header h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--dark);
+  font-size: 1.2rem; /* kichikroq bo‘ldi */
+  font-weight: 600;
+  color: #fff; /* oq rang bo‘ldi */
   margin: 0;
+  max-width: 70%; /* uzun bo‘lsa sig‘ishi uchun */
+  white-space: nowrap; /* bir qatorda qolsin */
+  overflow: hidden; /* ortiqcha qismini yashirish */
+  text-overflow: ellipsis; /* ... qo‘yadi */
 }
+
+/* Responsiv */
+@media (max-width: 768px) {
+  .menu-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .menu-header h2 {
+    font-size: 1rem;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-header h2 {
+    font-size: 0.9rem;
+  }
+}
+
 
 .search-bar {
   position: relative;
@@ -151,7 +192,7 @@ body {
 .tabs {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+ 
 }
 
 .tabs button {
@@ -677,3 +718,5 @@ body {
     width: 100%;
   }
 }
+
+

@@ -8,7 +8,8 @@ const Login = () => {
   const [formData, setFormData] = useState({
     ism: '',
     parol: '',
-    showPassword: false
+    showPassword: false,
+    subscriptionDuration: '1', // Default to 1 month
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +19,7 @@ const Login = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
     setError('');
   };
@@ -26,28 +27,38 @@ const Login = () => {
   const toggleShowPassword = () => {
     setFormData({
       ...formData,
-      showPassword: !formData.showPassword
+      showPassword: !formData.showPassword,
     });
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     if (!formData.ism.trim() || !formData.parol.trim()) {
       setError('Iltimos, ism va parolni kiriting!');
       setIsLoading(false);
       return;
     }
-    
+
     try {
       // Simulyatsiya qilingan API so'rovi
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const user = { 
-        ism: formData.ism.trim(), 
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const startDate = new Date();
+      const durationMonths = parseInt(formData.subscriptionDuration);
+      const endDate = new Date(startDate);
+      endDate.setMonth(startDate.getMonth() + durationMonths);
+
+      const user = {
+        ism: formData.ism.trim(),
         id: Date.now().toString(),
-        role: 'admin'
+        role: 'admin',
+        subscription: {
+          startDate: startDate.toISOString(),
+          duration: durationMonths,
+          endDate: endDate.toISOString(),
+        },
       };
       localStorage.setItem('currentUser', JSON.stringify(user));
       navigate('/menu');
@@ -66,13 +77,13 @@ const Login = () => {
             <h1><FaSignInAlt className="header-icon" /> Kirish</h1>
             <p>Iltimos ism va parolingizni kiriting</p>
           </div>
-          
+
           {error && (
             <div className="error-message">
               <MdErrorOutline className="error-icon" /> {error}
             </div>
           )}
-          
+
           <form onSubmit={handleLogin} className="login-form">
             <div className="form-group">
               <label htmlFor="ism">
@@ -92,7 +103,7 @@ const Login = () => {
                 />
               </div>
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="parol">
                 <FaLock className="input-icon" /> Parol
@@ -109,7 +120,7 @@ const Login = () => {
                   autoComplete="current-password"
                   className={error && !formData.parol.trim() ? 'error' : ''}
                 />
-                <span 
+                <span
                   className="toggle-password"
                   onClick={toggleShowPassword}
                   tabIndex="0"
@@ -119,9 +130,23 @@ const Login = () => {
                 </span>
               </div>
             </div>
-            
-            <button 
-              type="submit" 
+
+            <div className="form-group">
+              <label htmlFor="subscriptionDuration">Obuna muddati</label>
+              <select
+                id="subscriptionDuration"
+                name="subscriptionDuration"
+                value={formData.subscriptionDuration}
+                onChange={handleChange}
+              >
+                <option value="1">1 oy</option>
+                <option value="2">2 oy</option>
+                <option value="6">6 oy</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
               className="login-btn"
               disabled={isLoading}
             >
@@ -138,11 +163,11 @@ const Login = () => {
           </form>
         </div>
       </div>
-      
+
       <div className="login-image-container">
-        <img 
-          src="https://images.unsplash.com/photo-1660242164955-c6e208b0e43c?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-          alt="Login background" 
+        <img
+          src="https://images.unsplash.com/photo-1660242164955-c6e208b0e43c?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Login background"
           className="login-image"
           loading="lazy"
         />

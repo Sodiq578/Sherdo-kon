@@ -27,63 +27,91 @@ body {
   transition: margin-left 0.3s ease;
 }
 
-/* Time and User Info */
+/* Time, User, and Subscription Info */
 .time-user-info {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
   margin-bottom: 1.5rem;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.info-box {
+  flex: 1;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.current-time {
-  font-size: 0.9rem;
+.time-box h4,
+.user-box h4,
+.subscription-box h4 {
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.time-box p,
+.user-box p,
+.subscription-box p {
   color: #555;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.time-box p span,
+.user-box .username,
+.subscription-box p {
   font-weight: 500;
 }
 
-.user-info {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.username {
-  font-weight: 600;
+.user-box .username {
   color: #2c3e50;
   font-size: 1rem;
+  font-weight: 600;
 }
 
-.registration-time {
-  font-size: 0.85rem;
+.user-box .registration-time {
   color: #7f8c8d;
+  font-size: 0.85rem;
 }
 
+.subscription-box p:last-child {
+  color: #d32f2f; /* Red for remaining time to draw attention */
+}
 
-
-
-
-
-
-
-/* Header and Search */
-.menu-header {
+/* Header and Tabs Container */
+.header-tabs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
-  padding: 0.5rem 0;
 }
 
 .menu-header h2 {
   color: #2c3e50;
-  font-size: clamp(1.25rem, 3.5vw, 1.5rem); /* Scales between 1.25rem and 1.5rem */
+  font-size: clamp(1.25rem, 3.5vw, 1.5rem);
   font-weight: 600;
   margin-bottom: 0.75rem;
   line-height: 1.3;
   text-align: left;
+}
+
+/* Tabs and Search Container */
+.tabs-search-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .search-container {
@@ -91,7 +119,7 @@ body {
   flex-direction: row;
   gap: 0.75rem;
   align-items: center;
-  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+  flex-wrap: wrap;
 }
 
 .barcode-search-btn {
@@ -104,10 +132,10 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: clamp(0.85rem, 2.5vw, 0.9rem); /* Scales font size */
+  font-size: clamp(0.85rem, 2.5vw, 0.9rem);
   transition: all 0.2s ease;
-  min-height: 44px; /* Accessible touch target */
-  min-width: 150px; /* Prevents button from shrinking too much */
+  min-height: 44px;
+  min-width: 150px;
 }
 
 .barcode-search-btn:hover {
@@ -124,7 +152,7 @@ body {
 .search-bar {
   flex: 1;
   position: relative;
-  min-width: 200px; /* Ensures search bar doesn't collapse too much */
+  min-width: 200px;
 }
 
 .search-bar input {
@@ -132,7 +160,7 @@ body {
   padding: 0.75rem 2.5rem 0.75rem 1rem;
   border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: clamp(0.85rem, 2.5vw, 0.9rem); /* Scales font size */
+  font-size: clamp(0.85rem, 2.5vw, 0.9rem);
   transition: all 0.2s ease;
   background: #fff;
 }
@@ -152,79 +180,9 @@ body {
   font-size: 1rem;
 }
 
-/* Responsive Design for menu-header */
-@media (max-width: 768px) {
-  .menu-header {
-    margin-bottom: 1rem;
-  }
-
-  .menu-header h2 {
-    font-size: clamp(1.1rem, 3vw, 1.25rem);
-    text-align: center; /* Center title on smaller screens */
-  }
-
-  .search-container {
-    flex-direction: column; /* Stack vertically on mobile */
-    align-items: stretch;
-  }
-
-  .barcode-search-btn {
-    width: 100%;
-    justify-content: center;
-    min-width: unset; /* Allow full width */
-  }
-
-  .search-bar {
-    min-width: unset; /* Allow search bar to take full width */
-  }
-}
-
-@media (max-width: 480px) {
-  .menu-header h2 {
-    font-size: clamp(1rem, 2.8vw, 1.1rem);
-  }
-
-  .barcode-search-btn,
-  .search-bar input {
-    font-size: clamp(0.8rem, 2.2vw, 0.85rem);
-  }
-
-  .search-bar input {
-    padding: 0.65rem 2.2rem 0.65rem 0.8rem;
-  }
-
-  .search-bar i {
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 320px) {
-  .menu-header h2 {
-    font-size: clamp(0.9rem, 2.5vw, 1rem);
-  }
-
-  .barcode-search-btn,
-  .search-bar input {
-    font-size: clamp(0.75rem, 2vw, 0.8rem);
-    padding: 0.6rem 0.75rem;
-  }
-
-  .search-bar i {
-    right: 0.6rem;
-    font-size: 0.85rem;
-  }
-}
-
-
-
-
-
-
-/* Tabs */
 .tabs {
   display: flex;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #ddd;
+ 
   overflow-x: auto;
   white-space: nowrap;
   scrollbar-width: thin;
@@ -249,7 +207,7 @@ body {
   font-size: 0.9rem;
   color: #7f8c8d;
   transition: all 0.3s ease;
-  min-height: 44px; /* Accessible touch target */
+  min-height: 44px;
 }
 
 .tabs button.active {
@@ -303,7 +261,7 @@ body {
   gap: 0.5rem;
   font-size: 0.9rem;
   transition: all 0.2s ease;
-  min-height: 44px; /* Accessible touch target */
+  min-height: 44px;
 }
 
 .add-product-btn:hover {
@@ -576,7 +534,7 @@ body {
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
-  min-height: 44px; /* Accessible touch target */
+  min-height: 44px;
 }
 
 .edit-btn {
@@ -661,7 +619,7 @@ body {
   gap: 0.5rem;
   margin: 0 auto;
   transition: all 0.2s ease;
-  min-height: 44px; /* Accessible touch target */
+  min-height: 44px;
 }
 
 .close-scanner-btn:hover {
@@ -684,7 +642,7 @@ body {
 /* Responsive Design */
 @media (max-width: 1024px) {
   .content {
-    margin-left: 0; /* Adjust based on sidebar behavior */
+    margin-left: 0;
   }
 }
 
@@ -693,13 +651,34 @@ body {
     padding: 1rem;
   }
 
+  .time-user-info {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .info-box {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .tabs-search-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .search-container {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .barcode-search-btn {
     width: 100%;
     justify-content: center;
+    min-width: unset;
+  }
+
+  .search-bar {
+    min-width: unset;
   }
 
   .products-grid {
@@ -717,6 +696,11 @@ body {
   .detail-image,
   .detail-image-placeholder {
     max-height: 150px;
+  }
+
+  .menu-header h2 {
+    font-size: clamp(1.1rem, 3vw, 1.25rem);
+    text-align: center;
   }
 }
 
@@ -763,6 +747,19 @@ body {
   .scanner-content {
     max-width: 90%;
   }
+
+  .barcode-search-btn,
+  .search-bar input {
+    font-size: clamp(0.8rem, 2.2vw, 0.85rem);
+  }
+
+  .search-bar input {
+    padding: 0.65rem 2.2rem 0.65rem 0.8rem;
+  }
+
+  .search-bar i {
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 320px) {
@@ -785,6 +782,15 @@ body {
 
   .detail-label,
   .detail-value {
+    font-size: 0.85rem;
+  }
+
+  .menu-header h2 {
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+  }
+
+  .search-bar i {
+    right: 0.6rem;
     font-size: 0.85rem;
   }
 }

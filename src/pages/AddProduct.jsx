@@ -17,7 +17,7 @@ const AddProduct = () => {
     bolim: '',
     id: null,
   });
-  
+
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -27,7 +27,8 @@ const AddProduct = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [user, setUser] = useState(null);
   const [showScanner, setShowScanner] = useState(false);
-  
+  const [scannerLoading, setScannerLoading] = useState(false);
+
   const navigate = useNavigate();
   const videoRef = useRef(null);
 
@@ -41,10 +42,9 @@ const AddProduct = () => {
     const storedCategories = JSON.parse(localStorage.getItem('categories')) || [];
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-    // Enhance products with stock status
     const enhancedProducts = storedProducts.map(product => ({
       ...product,
-      stockStatus: getStockStatus(product.soni)
+      stockStatus: getStockStatus(product.soni),
     }));
 
     setProducts(enhancedProducts);
@@ -61,6 +61,7 @@ const AddProduct = () => {
   // Barcode scanner effect
   useEffect(() => {
     if (showScanner) {
+      setScannerLoading(true);
       Quagga.init({
         inputStream: {
           name: 'Live',
@@ -86,9 +87,11 @@ const AddProduct = () => {
           console.error('Quagga init error:', err);
           alert("Shtrix-kodni skanerlashda xatolik yuz berdi! Iltimos, kamera ruxsatlarini tekshiring.");
           setShowScanner(false);
+          setScannerLoading(false);
           return;
         }
         Quagga.start();
+        setScannerLoading(false);
       });
 
       Quagga.onDetected((data) => {
@@ -100,6 +103,7 @@ const AddProduct = () => {
 
       return () => {
         Quagga.stop();
+        setScannerLoading(false);
       };
     }
   }, [showScanner]);
@@ -145,9 +149,8 @@ const AddProduct = () => {
   // Form submission handler
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { nomi, kodi, shtrix_kod, narx, soni, id, bolim } = formData;
+    const { nomi, kodi, shtrix_kod, narx, soni, bolim, id } = formData;
 
-    // Validation
     if (!nomi || !kodi || !narx || !soni || !bolim) {
       alert("Iltimos, barcha majburiy maydonlarni to'ldiring!");
       return;
@@ -158,7 +161,6 @@ const AddProduct = () => {
       return;
     }
 
-    // Check for duplicate codes
     const isDuplicateCode = products.some(
       (p) => (p.kodi === kodi || (shtrix_kod && p.shtrix_kod === shtrix_kod)) && (!isEditing || p.id !== id)
     );
@@ -168,7 +170,6 @@ const AddProduct = () => {
       return;
     }
 
-    // Create new product object
     const newProduct = {
       id: id || Date.now().toString(),
       nomi,
@@ -188,7 +189,6 @@ const AddProduct = () => {
       updatedAt: new Date().toISOString(),
     };
 
-    // Update products list
     let updatedProducts;
     if (isEditing) {
       updatedProducts = products.map((p) => (p.id === id ? newProduct : p));
@@ -196,12 +196,10 @@ const AddProduct = () => {
       updatedProducts = [...products, newProduct];
     }
 
-    // Save to localStorage
     localStorage.setItem('products', JSON.stringify(updatedProducts));
     setProducts(updatedProducts);
     alert(`${nomi} muvaffaqiyatli ${isEditing ? "tahrirlandi" : "qo'shildi"}!`);
 
-    // Reset form
     resetForm();
   };
 
@@ -306,6 +304,7 @@ const AddProduct = () => {
               placeholder="Nomi, kodi, shtrix-kod yoki bo'lim bo'yicha qidirish..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="Mahsulot qidirish"
             />
             <i className="fas fa-search"></i>
           </div>
@@ -313,10 +312,10 @@ const AddProduct = () => {
 
         {/* Navigation Tabs */}
         <div className="tabs">
-          <button onClick={() => navigate('/menu')}>Tovar jadvali</button>
-          <button onClick={() => navigate('/orders')}>Savdo statistikasi</button>
-          <button className="active">Tovar qo'shish</button>
-          <button onClick={() => navigate('/cashier')}>Kassir</button>
+          <button onClick={() => navigate('/menu')} aria-label="Tovar jadvaliga o'tish">Tovar jadvali</button>
+          <button onClick={() => navigate('/orders')} aria-label="Savdo statistikasiga o'tish">Savdo statistikasi</button>
+          <button className="active" aria-label="Tovar qo'shish sahifasi">Tovar qo'shish</button>
+          <button onClick={() => navigate('/cashier')} aria-label="Kassir sahifasiga o'tish">Kassir</button>
         </div>
 
         {/* Main Content */}
@@ -327,33 +326,38 @@ const AddProduct = () => {
 
             {/* Product Name */}
             <div className="form-group">
-              <label>Tovar nomi *</label>
+              <label htmlFor="nomi">Tovar nomi *</label>
               <input
+                id="nomi"
                 type="text"
                 name="nomi"
                 value={formData.nomi}
                 onChange={handleChange}
                 required
+                aria-required="true"
               />
             </div>
 
             {/* Product Code */}
             <div className="form-group">
-              <label>Tovar kodi *</label>
+              <label htmlFor="kodi">Tovar kodi *</label>
               <input
+                id="kodi"
                 type="text"
                 name="kodi"
                 value={formData.kodi}
                 onChange={handleChange}
                 required
+                aria-required="true"
               />
             </div>
 
             {/* Barcode */}
             <div className="form-group">
-              <label>Shtrix-kod (ixtiyoriy)</label>
+              <label htmlFor="shtrix_kod">Shtrix-kod (ixtiyoriy)</label>
               <div className="shtrix-kod-container">
                 <input
+                  id="shtrix_kod"
                   type="text"
                   name="shtrix_kod"
                   value={formData.shtrix_kod}
@@ -364,8 +368,10 @@ const AddProduct = () => {
                   type="button"
                   className="scan-btn"
                   onClick={() => setShowScanner(true)}
+                  aria-label="Shtrix-kodni skanerlash"
+                  disabled={scannerLoading}
                 >
-                  <i className="fas fa-barcode"></i> Skanerlash
+                  <i className="fas fa-barcode"></i> {scannerLoading ? 'Yuklanmoqda...' : 'Skanerlash'}
                 </button>
               </div>
             </div>
@@ -373,38 +379,44 @@ const AddProduct = () => {
             {/* Price and Quantity */}
             <div className="form-row">
               <div className="form-group">
-                <label>Narxi (so'm) *</label>
+                <label htmlFor="narx">Narxi (so'm) *</label>
                 <input
+                  id="narx"
                   type="number"
                   name="narx"
                   value={formData.narx}
                   onChange={handleChange}
                   min="0"
                   required
+                  aria-required="true"
                 />
               </div>
               <div className="form-group">
-                <label>Soni *</label>
+                <label htmlFor="soni">Soni *</label>
                 <input
+                  id="soni"
                   type="number"
                   name="soni"
                   value={formData.soni}
                   onChange={handleChange}
                   min="0"
                   required
+                  aria-required="true"
                 />
               </div>
             </div>
 
             {/* Category */}
             <div className="form-group">
-              <label>Bo'lim *</label>
+              <label htmlFor="bolim">Bo'lim *</label>
               <div className="category-select">
                 <select
+                  id="bolim"
                   name="bolim"
                   value={formData.bolim}
                   onChange={handleChange}
                   required
+                  aria-required="true"
                 >
                   <option value="">Bo'limni tanlang</option>
                   {categories.map((category, index) => (
@@ -415,6 +427,7 @@ const AddProduct = () => {
                   type="button"
                   className="add-category-btn"
                   onClick={() => setShowCategoryInput(!showCategoryInput)}
+                  aria-label={showCategoryInput ? 'Bo\'lim qo\'shishni bekor qilish' : 'Yangi bo\'lim qo\'shish'}
                 >
                   {showCategoryInput ? 'Bekor qilish' : '+ Yangi bo\'lim'}
                 </button>
@@ -427,12 +440,14 @@ const AddProduct = () => {
                     placeholder="Yangi bo'lim nomi"
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
+                    aria-label="Yangi bo'lim nomi"
                   />
                   <button
                     type="button"
                     className="save-category-btn"
                     onClick={addCategory}
                     disabled={!newCategory.trim()}
+                    aria-label="Yangi bo'limni saqlash"
                   >
                     Saqlash
                   </button>
@@ -442,17 +457,19 @@ const AddProduct = () => {
 
             {/* Image */}
             <div className="form-group">
-              <label>Rasm (ixtiyoriy)</label>
+              <label htmlFor="rasm">Rasm (ixtiyoriy)</label>
               <input
+                id="rasm"
                 type="file"
                 name="rasm"
                 accept="image/*"
                 onChange={handleChange}
+                aria-label="Mahsulot rasmini yuklash"
               />
               {formData.rasm && typeof formData.rasm === 'string' && (
                 <div className="current-image">
                   <p>Joriy rasm:</p>
-                  <img src={formData.rasm} alt="Current product" width="100" />
+                  <img src={formData.rasm} alt="Joriy mahsulot rasmi" width="120" />
                 </div>
               )}
             </div>
@@ -465,6 +482,7 @@ const AddProduct = () => {
                 checked={formData.kerakli}
                 onChange={handleChange}
                 id="kerakli"
+                aria-label="Kerakli mahsulot sifatida belgilash"
               />
               <label htmlFor="kerakli">
                 Kerakli mahsulot {formData.kerakli && "(Do'konda doim bo'lishi kerak)"}
@@ -473,11 +491,11 @@ const AddProduct = () => {
 
             {/* Form Actions */}
             <div className="form-actions">
-              <button type="submit" className="submit-btn">
+              <button type="submit" className="submit-btn" aria-label={isEditing ? "O'zgarishlarni saqlash" : "Tovar qo'shish"}>
                 {isEditing ? "O'zgarishlarni saqlash" : "Tovar qo'shish"}
               </button>
               {isEditing && (
-                <button type="button" onClick={resetForm} className="cancel-btn">
+                <button type="button" onClick={resetForm} className="cancel-btn" aria-label="Tahrirlashni bekor qilish">
                   Bekor qilish
                 </button>
               )}
@@ -493,6 +511,7 @@ const AddProduct = () => {
                 <button
                   className="close-scanner-btn"
                   onClick={() => setShowScanner(false)}
+                  aria-label="Skanerlash oynasini yopish"
                 >
                   Yopish
                 </button>
@@ -511,8 +530,12 @@ const AddProduct = () => {
                     className={`product-item ${product.stockStatus} ${product.kerakli ? 'essential' : ''}`}
                   >
                     <div className="product-details">
-                      {product.rasm && (
+                      {product.rasm ? (
                         <img src={product.rasm} alt={product.nomi} className="product-thumbnail" />
+                      ) : (
+                        <div className="product-thumbnail" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#e9ecef' }}>
+                          <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Rasm yo'q</span>
+                        </div>
                       )}
                       <div className="product-info">
                         <h4>
@@ -539,12 +562,14 @@ const AddProduct = () => {
                       <button
                         onClick={() => editProduct(product)}
                         className="edit-btn"
+                        aria-label={`${product.nomi} mahsulotini tahrirlash`}
                       >
                         Tahrirlash
                       </button>
                       <button
                         onClick={() => deleteProduct(product)}
                         className="delete-btn"
+                        aria-label={`${product.nomi} mahsulotini o'chirish`}
                       >
                         O'chirish
                       </button>

@@ -175,7 +175,8 @@ const Cashier = () => {
     const methods = {
       cash: 'Naqd pul',
       card: 'Plastik karta',
-      transfer: "Bank o'tkazmasi"
+      transfer: "Bank o'tkazmasi",
+      debt: 'Qarz'
     };
     return methods[method] || method;
   };
@@ -184,7 +185,12 @@ const Cashier = () => {
   const completeSale = async (withReceipt = false) => {
     if (cart.length === 0) {
       alert("Savat bo'sh!");
-      return;
+      return false;
+    }
+
+    if (paymentMethod === 'debt' && !customer.trim()) {
+      alert("Qarz uchun mijoz ismini kiriting!");
+      return false;
     }
 
     const sale = {
@@ -405,7 +411,7 @@ const Cashier = () => {
             <div className="customer-info">
               <input
                 type="text"
-                placeholder="Mijoz ismi (ixtiyoriy)"
+                placeholder="Mijoz ismi (ixtiyoriy, qarz uchun majburiy)"
                 value={customer}
                 onChange={(e) => setCustomer(e.target.value)}
               />
@@ -416,6 +422,7 @@ const Cashier = () => {
                 <option value="cash">Naqd</option>
                 <option value="card">Karta</option>
                 <option value="transfer">O'tkazma</option>
+                <option value="debt">Qarz</option>
               </select>
               <textarea
                 placeholder="Eslatma (ixtiyoriy)"

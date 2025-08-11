@@ -8,6 +8,8 @@ import Stats from './pages/Stats';
 import Sales from './pages/Sales';
 import Cashier from './pages/Cashier';
 import Returns from './pages/Returns';
+import Debts from './pages/Debts';
+import SubscriptionExpired from './pages/SubscriptionExpired';
 import './App.css';
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
           <Route path="/sales" element={<Sales />} />
           <Route path="/cashier" element={<Cashier />} />
           <Route path="/returns" element={<Returns />} />
+          <Route path="/debts" element={<Debts />} />
+          <Route path="/subscription-expired" element={<SubscriptionExpired />} />
         </Routes>
       </Router>
     </div>

@@ -1,0 +1,827 @@
+/* Asosiy konteyner */
+.debts-page {
+  padding: 20px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+/* Sarlavha */
+.page-title {
+  display: flex;
+  align-items: center;
+  color: #2c3e50;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.title-icon {
+  margin-right: 10px;
+  font-size: 1.2em;
+  color: #e74c3c;
+}
+
+/* Boshqaruv elementlari */
+.debts-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.search-container {
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 15px 10px 35px;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7f8c8d;
+}
+
+.clear-search {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #95a5a6;
+  cursor: pointer;
+  font-size: 16px;
+  transition: color 0.2s;
+}
+
+.clear-search:hover {
+  color: #e74c3c;
+}
+
+.clear-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  background-color: white;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  color: #7f8c8d;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.clear-all-btn:hover {
+  background-color: #f8f9fa;
+  color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+.btn-icon {
+  font-size: 16px;
+}
+
+/* Saralash va filtr */
+.sort-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 2;
+  min-width: 300px;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  padding: 0 10px;
+  flex: 1;
+}
+
+.date-icon {
+  color: #7f8c8d;
+  margin-right: 8px;
+}
+
+.date-input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  min-width: 120px;
+}
+
+.date-input:focus {
+  outline: none;
+}
+
+.date-separator {
+  color: #bdc3c7;
+  margin: 0 5px;
+}
+
+.select-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: white;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  padding: 0 10px;
+  flex: 1;
+}
+
+.filter-icon {
+  color: #7f8c8d;
+}
+
+.sort-select {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sort-select:focus {
+  outline: none;
+}
+
+/* Qarz xulosasi */
+.debt-summary {
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 15px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #e74c3c;
+}
+
+.summary-title {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin: 0 0 5px 0;
+}
+
+.summary-amount {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+/* Qarzlar ro'yxati */
+.debts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.debt-item {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.debt-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.debt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  cursor: pointer;
+  background-color: white;
+  transition: background-color 0.2s;
+}
+
+.debt-header:hover {
+  background-color: #f8f9fa;
+}
+
+.debt-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.debt-date {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-bottom: 5px;
+}
+
+.info-icon {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.debt-customer {
+  font-size: 15px;
+  font-weight: 500;
+  color: #2c3e50;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.debt-amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e74c3c;
+  margin: 0 15px;
+}
+
+.accordion-icon {
+  color: #95a5a6;
+  font-size: 18px;
+  transition: transform 0.3s;
+}
+
+.debt-item.expanded .accordion-icon {
+  transform: rotate(180deg);
+}
+
+/* Qarz tafsilotlari */
+.debt-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  border-top: 1px solid transparent;
+}
+
+.debt-item.expanded .debt-details {
+  max-height: 1000px;
+  border-top: 1px solid #ecf0f1;
+}
+
+.details-section {
+  padding: 15px 20px;
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.detail-item {
+  flex: 1;
+}
+
+.detail-label {
+  display: block;
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-bottom: 5px;
+}
+
+.detail-value {
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+/* Mahsulotlar ro'yxati */
+.items-section {
+  padding: 15px 20px;
+}
+
+.items-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+.title-text {
+  font-weight: 500;
+}
+
+.items-count {
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed #ecf0f1;
+  font-size: 14px;
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-name {
+  flex: 2;
+  color: #2c3e50;
+}
+
+.item-quantity {
+  flex: 1;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+.item-price {
+  flex: 1;
+  text-align: right;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+/* Amallar */
+.debt-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #ecf0f1;
+}
+
+.edit-button, .pay-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.edit-button {
+  background-color: #3498db;
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #2980b9;
+}
+
+.pay-button {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.pay-button:hover {
+  background-color: #27ae60;
+}
+
+.action-icon {
+  font-size: 14px;
+}
+
+/* Bo'sh holat */
+.no-debts {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.empty-icon {
+  font-size: 48px;
+  color: #bdc3c7;
+  margin-bottom: 15px;
+}
+
+.empty-state p {
+  font-size: 16px;
+  color: #7f8c8d;
+  margin: 0 0 5px 0;
+}
+
+.empty-state small {
+  font-size: 13px;
+  color: #bdc3c7;
+  text-align: center;
+}
+
+/* Modal oynasi */
+.edit-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+}
+
+.edit-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.edit-modal-content {
+  background-color: white;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-20px);
+  transition: all 0.3s;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  color: #95a5a6;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-modal:hover {
+  color: #e74c3c;
+}
+
+.edit-modal form {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #dfe6e9;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+textarea.form-input {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 15px;
+  margin-top: 10px;
+  border-top: 1px solid #ecf0f1;
+}
+
+.cancel-btn, .save-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn {
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+}
+
+.cancel-btn:hover {
+  background-color: #e0e5e9;
+}
+
+.save-btn {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: #27ae60;
+}
+
+/* Yuklash animatsiyasi */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsivlik */
+@media (max-width: 768px) {
+  .debts-controls {
+    flex-direction: column;
+  }
+  
+  .search-container, .sort-controls {
+    width: 100%;
+  }
+  
+  .date-range, .select-group {
+    width: 100%;
+  }
+  
+  .debt-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .debt-info {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .debt-amount {
+    align-self: flex-start;
+    margin: 10px 0;
+  }
+  
+  .details-section {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .debt-actions {
+    flex-direction: column;
+  }
+  
+  .edit-button, .pay-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .edit-modal-content {
+    margin: 0 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .item-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .item-name, .item-quantity, .item-price {
+    text-align: left;
+    width: 100%;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+/* Boshqaruv elementlari */
+.debts-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.controls-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Qidiruv paneli */
+.search-container {
+  flex: 1;
+  min-width: 250px;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 15px 10px 35px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+.clear-search {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+}
+
+/* Sana filtr */
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.date-input-group label {
+  font-size: 14px;
+  color: #555;
+}
+
+.date-input-group input {
+  border: none;
+  outline: none;
+}
+
+/* Saralash */
+.sort-filter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sort-select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+.sort-order-btn {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tugmalar */
+.secondary-btn {
+  padding: 10px 15px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+/* Responsivlik */
+@media (max-width: 768px) {
+  .controls-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-container {
+    min-width: auto;
+  }
+  
+  .date-filter {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .date-input-group {
+    width: 100%;
+  }
+}

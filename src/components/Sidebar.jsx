@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { 
+  HiHome, 
+  HiCube, 
+  HiPlusCircle, 
+  HiShoppingCart, 
+  HiReceiptRefund,
+  HiCreditCard,
+  HiChartBar,
+  HiDocumentReport,
+  HiOutlineLogout
+} from 'react-icons/hi';
+import { FiMenu, FiX } from 'react-icons/fi';
 import './Sidebar.css';
 
 const Sidebar = () => {
@@ -9,27 +21,28 @@ const Sidebar = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const navItems = [
-    { section: null, path: '/menu', icon: 'fas fa-home', label: 'Asosiy sahifa' },
+    { section: null, path: '/menu', icon: <HiHome size={20} />, label: 'Asosiy sahifa' },
     {
       section: 'Ombor boshqaruvi',
       items: [
-        { path: '/menu', icon: 'fas fa-boxes', label: 'Tovar jadavali' },
-        { path: '/add-product', icon: 'fas fa-plus-circle', label: "Tovar qo'shish" },
+        { path: '/menu', icon: <HiCube size={20} />, label: 'Tovar jadavali' },
+        { path: '/add-product', icon: <HiPlusCircle size={20} />, label: "Tovar qo'shish" },
       ],
     },
     {
       section: "Sotuv bo'limi",
       items: [
-        { path: '/cashier', icon: 'fas fa-cash-register', label: 'Kassa' },
-        { path: '/sales', icon: 'fas fa-shopping-cart', label: 'Sotuvlar' },
-        { path: '/returns', icon: 'fas fa-exchange-alt', label: 'Qaytarilganlar' },
+        { path: '/cashier', icon: <HiShoppingCart size={20} />, label: 'Kassa', highlight: true },
+        { path: '/sales', icon: <HiCreditCard size={20} />, label: 'Sotuvlar' },
+        { path: '/returns', icon: <HiReceiptRefund size={20} />, label: 'Qaytarilganlar' },
+        { path: '/debts', icon: <HiDocumentReport size={20} />, label: 'Qarzlar' },
       ],
     },
     {
       section: 'Hisobotlar',
       items: [
-        { path: '/orders', icon: 'fas fa-chart-line', label: 'Savdo statistikasi' },
-        { path: '/stats', icon: 'fas fa-file-invoice-dollar', label: 'Kunlik hisobot' },
+        { path: '/orders', icon: <HiChartBar size={20} />, label: 'Savdo statistikasi' },
+        { path: '/stats', icon: <HiDocumentReport size={20} />, label: 'Kunlik hisobot' },
       ],
     },
   ];
@@ -61,6 +74,7 @@ const Sidebar = () => {
     };
 
     window.addEventListener('resize', handleResize);
+    handleResize(); // Initialize correctly
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -90,9 +104,7 @@ const Sidebar = () => {
           aria-label={isOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isOpen}
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
         </button>
       )}
 
@@ -105,29 +117,29 @@ const Sidebar = () => {
           {navItems.map((item, index) => (
             <React.Fragment key={index}>
               {item.section && <li className="nav-section-title">{item.section}</li>}
-              {(item.items || [item]).map(({ path, icon, label }, idx) => (
+              {(item.items || [item]).map((navItem, idx) => (
                 <li
                   key={`${index}-${idx}`}
-                  className={`nav-item ${location.pathname === path ? 'active' : ''}`}
-                  onClick={() => handleNavigation(path)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleNavigation(path)}
+                  className={`nav-item ${location.pathname === navItem.path ? 'active' : ''} ${navItem.highlight ? 'highlight' : ''}`}
+                  onClick={() => handleNavigation(navItem.path)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleNavigation(navItem.path)}
                   tabIndex={0}
                   role="button"
-                  aria-label={label}
+                  aria-label={navItem.label}
                 >
-                  <i className={icon}></i>
-                  <span>{label}</span>
+                  <span className="nav-icon">{navItem.icon}</span>
+                  <span className="nav-label">{navItem.label}</span>
                 </li>
               ))}
             </React.Fragment>
           ))}
         </ul>
         <div className="sidebar-footer">
-          <p>© {new Date().getFullYear()} Savdo Tizimi</p>
           <button className="logout-btn" onClick={handleLogout} aria-label="Log out">
-            <i className="fas fa-sign-out-alt"></i>
+            <HiOutlineLogout size={20} />
             <span>Tizimdan chiqish</span>
           </button>
+          <p>© {new Date().getFullYear()} Savdo Tizimi</p>
         </div>
       </nav>
 

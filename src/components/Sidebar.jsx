@@ -9,10 +9,12 @@ import {
   HiCreditCard,
   HiChartBar,
   HiDocumentReport,
-  HiOutlineLogout
+  HiOutlineLogout,
+  HiPhone
 } from 'react-icons/hi';
 import { FiMenu, FiX } from 'react-icons/fi';
 import './Sidebar.css';
+import logo from '../logo.png'; // Logo import
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -25,7 +27,7 @@ const Sidebar = () => {
     {
       section: 'Ombor boshqaruvi',
       items: [
-        { path: '/menu', icon: <HiCube size={20} />, label: 'Tovar jadavali' },
+        { path: '/menu', icon: <HiCube size={20} />, label: 'Tovar jadvali' },
         { path: '/add-product', icon: <HiPlusCircle size={20} />, label: "Tovar qo'shish" },
       ],
     },
@@ -74,16 +76,12 @@ const Sidebar = () => {
     };
 
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initialize correctly
+    handleResize(); 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
-    if (isMobile && isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
+    document.body.style.overflow = (isMobile && isOpen) ? 'hidden' : 'auto';
     return () => {
       document.body.style.overflow = 'auto';
     };
@@ -108,21 +106,28 @@ const Sidebar = () => {
         </button>
       )}
 
-      <nav className={`sidebar ${isOpen ? 'open' : ''} ${isMobile ? 'mobile' : ''}`} aria-label="Main navigation">
+      <nav 
+        className={`sidebar ${isOpen ? 'open' : ''} ${isMobile ? 'mobile' : ''}`} 
+        aria-label="Main navigation"
+      >
         <div className="logo">
-          <img src="/path/to/logo.png" alt="Savdo Tizimi Logo" />
+          <img src={logo} alt="Savdo Tizimi Logo" />
           <span>Savdo Tizimi</span>
         </div>
         <ul className="nav-menu">
           {navItems.map((item, index) => (
             <React.Fragment key={index}>
-              {item.section && <li className="nav-section-title">{item.section}</li>}
+              {item.section && (
+                <li className="nav-section-title">
+                  {item.section}
+                </li>
+              )}
               {(item.items || [item]).map((navItem, idx) => (
                 <li
                   key={`${index}-${idx}`}
                   className={`nav-item ${location.pathname === navItem.path ? 'active' : ''} ${navItem.highlight ? 'highlight' : ''}`}
                   onClick={() => handleNavigation(navItem.path)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleNavigation(navItem.path)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleNavigation(navItem.path)} // Fixed typo here
                   tabIndex={0}
                   role="button"
                   aria-label={navItem.label}
@@ -135,16 +140,27 @@ const Sidebar = () => {
           ))}
         </ul>
         <div className="sidebar-footer">
-          <button className="logout-btn" onClick={handleLogout} aria-label="Log out">
+          <button 
+            className="logout-btn" 
+            onClick={handleLogout} 
+            aria-label="Log out"
+          >
             <HiOutlineLogout size={20} />
             <span>Tizimdan chiqish</span>
           </button>
+          <p className="support-contact">
+            <HiPhone size={16} /> Qo'llab-quvvatlash: <a href="tel:+998974634455">97 463-44-55</a>
+          </p>
           <p>© {new Date().getFullYear()} Savdo Tizimi</p>
         </div>
       </nav>
 
       {isMobile && isOpen && (
-        <div className="sidebar-overlay" onClick={toggleSidebar} aria-hidden="true"></div>
+        <div 
+          className="sidebar-overlay" 
+          onClick={toggleSidebar} 
+          aria-hidden="true"
+        ></div>
       )}
     </>
   );

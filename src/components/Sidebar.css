@@ -107,7 +107,7 @@
   padding: 12px 16px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px; /* Reduced from 12px to 8px to bring icons and text closer */
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 15px;

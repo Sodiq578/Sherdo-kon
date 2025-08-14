@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import jsQR from 'jsqr';
 
 const Cashier = () => {
-  // State larni aniqlash
+  // State declarations
   const [cart, setCart] = useState([]);
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,28 +16,28 @@ const Cashier = () => {
   const [showScanner, setShowScanner] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
   const [saleCompleted, setSaleCompleted] = useState(false);
+  const [showCategoryButtons, setShowCategoryButtons] = useState(false);
   
-  // Ref lar
+  // Refs
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
-  // Mahsulotlarni yuklash
+  // Load products
   useEffect(() => {
     const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
     setProducts(storedProducts);
     searchInputRef.current?.focus();
   }, []);
 
-  // Skaner effekti
+  // Scanner effect
   useEffect(() => {
     if (showScanner) startScanner();
     else stopScanner();
     return () => stopScanner();
   }, [showScanner]);
 
-  // Skanerni boshlash
   const startScanner = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -55,12 +55,10 @@ const Cashier = () => {
     }
   };
 
-  // Skanerni to'xtatish
   const stopScanner = () => {
     videoRef.current?.srcObject?.getTracks().forEach(track => track.stop());
   };
 
-  // Shtrix-kodni skanerlash
   const scanBarcode = () => {
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
@@ -85,12 +83,10 @@ const Cashier = () => {
     requestAnimationFrame(scan);
   };
 
-  // Kategoriyalarni olish
   const categories = useMemo(() => {
     return ['all', ...new Set(products.map(p => p.bolim).filter(Boolean))];
   }, [products]);
 
-  // Filtrlangan mahsulotlar
   const filteredProducts = useMemo(() => {
     const term = searchTerm.toLowerCase();
     return products.filter(product => {
@@ -103,7 +99,6 @@ const Cashier = () => {
     });
   }, [products, searchTerm, activeCategory]);
 
-  // Savatga qo'shish
   const addToCart = (product, quantity = 1) => {
     if (product.soni <= 0) {
       alert(`${product.nomi} omborda mavjud emas!`);
@@ -131,7 +126,6 @@ const Cashier = () => {
     });
   };
 
-  // Savatdagi miqdorni o'zgartirish
   const updateCartQuantity = (id, newQuantity) => {
     if (newQuantity < 1) {
       removeFromCart(id);
@@ -151,37 +145,22 @@ const Cashier = () => {
     ));
   };
 
-  // Savatdan o'chirish
   const removeFromCart = (id) => {
     setCart(cart.filter(item => item.id !== id));
   };
 
-  // Savatni tozalash
   const clearCart = () => {
     if (cart.length > 0 && window.confirm("Haqiqatan ham savatni tozalamoqchimisiz?")) {
       setCart([]);
     }
   };
 
-  // Jami summani hisoblash
   const { subtotal, total } = useMemo(() => {
     const subtotal = cart.reduce((sum, item) => sum + item.narx * item.quantity, 0);
     const total = subtotal * (1 - discount / 100);
     return { subtotal, total };
   }, [cart, discount]);
 
-  // To'lov usulini nomini olish
-  const getPaymentMethodName = (method) => {
-    const methods = {
-      cash: 'Naqd pul',
-      card: 'Plastik karta',
-      transfer: "Bank o'tkazmasi",
-      debt: 'Qarz'
-    };
-    return methods[method] || method;
-  };
-
-  // Sotuvni yakunlash (asosiy funksiya)
   const completeSale = async (withReceipt = false) => {
     if (cart.length === 0) {
       alert("Savat bo'sh!");
@@ -206,7 +185,6 @@ const Cashier = () => {
     };
 
     try {
-      // Mahsulotlarni yangilash
       const updatedProducts = products.map(product => {
         const cartItem = cart.find(item => item.id === product.id);
         return cartItem 
@@ -215,11 +193,9 @@ const Cashier = () => {
       });
       localStorage.setItem('products', JSON.stringify(updatedProducts));
 
-      // Sotuvlar tarixiga qo'shish
       const sales = JSON.parse(localStorage.getItem('sales')) || [];
       localStorage.setItem('sales', JSON.stringify([...sales, sale]));
 
-      // Kunlik hisobotga qo'shish
       const currentDate = new Date().toISOString().split('T')[0];
       const dailyReports = JSON.parse(localStorage.getItem('dailyReports')) || {};
       const dailyReport = dailyReports[currentDate] || { date: currentDate, sales: [] };
@@ -229,14 +205,12 @@ const Cashier = () => {
       dailyReports[currentDate] = dailyReport;
       localStorage.setItem('dailyReports', JSON.stringify(dailyReports));
 
-      // Tozalash
       setCart([]);
       setCustomer('');
       setDiscount(0);
       setNote('');
       setSaleCompleted(true);
       
-      // 3 soniyadan keyin bildirishni yo'qotish
       setTimeout(() => setSaleCompleted(false), 3000);
       
       return true;
@@ -247,16 +221,13 @@ const Cashier = () => {
     }
   };
 
-  // Sotuvni chek bilan yakunlash
   const completeSaleWithReceipt = async () => {
     const success = await completeSale(true);
     if (success) {
-      // Bu yerda chek yaratish logikasi qo'shilishi mumkin
       alert("Sotuv muvaffaqiyatli yakunlandi! Chek tayyor.");
     }
   };
 
-  // Sotuvni cheksiz yakunlash
   const completeSaleWithoutReceipt = async () => {
     const success = await completeSale(false);
     if (success) {
@@ -265,26 +236,30 @@ const Cashier = () => {
   };
 
   return (
-    <div className="main-container">
+    <div className="cashier-container">
       <Sidebar />
-      <div className="content">
+      <div className="cashier-content">
         <div className="cashier-header">
-          <h2>Kassir</h2>
-          <div className="search-bar">
+          <h2 className="cashier-title">Kassir</h2>
+          <div className="cashier-search">
             <input
               ref={searchInputRef}
               type="text"
               placeholder="Qidirish..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="cashier-search-input"
             />
-            <button onClick={() => setShowScanner(true)}>
+            <button 
+              className="cashier-scan-button"
+              onClick={() => setShowScanner(true)}
+            >
               <i className="fas fa-barcode"></i> Skaner
             </button>
           </div>
         </div>
 
-        <div className="tabs">
+        <div className="cashier-tabs">
           <button onClick={() => navigate('/menu')}>Tovarlar</button>
           <button onClick={() => navigate('/orders')}>Sotuvlar</button>
           <button onClick={() => navigate('/stats')}>Hisobot</button>
@@ -292,66 +267,99 @@ const Cashier = () => {
         </div>
 
         {saleCompleted && (
-          <div className="success-message">
+          <div className="cashier-success">
             Sotuv muvaffaqiyatli yakunlandi!
           </div>
         )}
 
-        <div className="cashier-container">
-          <div className="product-selection">
-            <div className="category-tabs">
-              {categories.map(category => (
-                <button
-                  key={category}
-                  className={activeCategory === category ? 'active' : ''}
-                  onClick={() => setActiveCategory(category)}
+        <div className="cashier-main">
+          <div className="cashier-products">
+            <div className="cashier-categories">
+              <div className="category-select-container">
+                <select
+                  value={activeCategory}
+                  onChange={(e) => setActiveCategory(e.target.value)}
+                  className="category-select"
                 >
-                  {category === 'all' ? 'Barchasi' : category}
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category === 'all' ? 'Barcha bo\'limlar' : category}
+                    </option>
+                  ))}
+                </select>
+                <button 
+                  className="toggle-categories-btn"
+                  onClick={() => setShowCategoryButtons(!showCategoryButtons)}
+                >
+                  {showCategoryButtons ? 'Yashirish' : 'Ko\'rsatish'}
                 </button>
-              ))}
+              </div>
+
+              {showCategoryButtons && (
+                <div className="category-buttons">
+                  {categories.map(category => (
+                    <button
+                      key={category}
+                      className={`category-btn ${activeCategory === category ? 'active' : ''}`}
+                      onClick={() => setActiveCategory(category)}
+                    >
+                      {category === 'all' ? 'Barchasi' : category}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {showScanner && (
-              <div className="scanner-modal">
+              <div className="cashier-scanner">
                 <div className="scanner-content">
                   <h3>Skaner</h3>
-                  <video ref={videoRef} />
-                  <canvas ref={canvasRef} style={{ display: 'none' }} />
-                  <button onClick={() => setShowScanner(false)}>Yopish</button>
+                  <video ref={videoRef} className="scanner-video" />
+                  <canvas ref={canvasRef} className="scanner-canvas" />
+                  <button 
+                    className="scanner-close"
+                    onClick={() => setShowScanner(false)}
+                  >
+                    Yopish
+                  </button>
                 </div>
               </div>
             )}
 
-            <div className="product-grid">
+            <div className="cashier-product-grid">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map(product => (
                   <div 
                     key={product.id} 
-                    className="product-card"
+                    className="cashier-product-card"
                     onClick={() => addToCart(product)}
                   >
                     {product.rasm && (
-                      <img src={product.rasm} alt={product.nomi} />
+                      <img src={product.rasm} alt={product.nomi} className="product-image" />
                     )}
                     <div className="product-info">
-                      <h4>{product.nomi}</h4>
-                      <p className="price">{product.narx.toLocaleString()} so'm</p>
-                      <p className="stock">Qoldiq: {product.soni}</p>
+                      <h4 className="product-name">{product.nomi}</h4>
+                      <p className="product-price">{product.narx.toLocaleString()} so'm</p>
+                      <p className="product-stock">Qoldiq: {product.soni}</p>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="no-products">
+                <div className="cashier-empty">
                   <p>Tovarlar topilmadi</p>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="cart-section">
+          <div className="cashier-cart">
             <div className="cart-header">
-              <h3>Savat ({cart.reduce((sum, item) => sum + item.quantity, 0)} ta)</h3>
-              <button onClick={clearCart} disabled={!cart.length}>
+              <h3 className="cart-title">Savat ({cart.reduce((sum, item) => sum + item.quantity, 0)} ta)</h3>
+              <button 
+                className="cart-clear"
+                onClick={clearCart} 
+                disabled={!cart.length}
+              >
                 Tozalash
               </button>
             </div>
@@ -361,19 +369,29 @@ const Cashier = () => {
                 cart.map(item => (
                   <div key={item.id} className="cart-item">
                     <div className="item-info">
-                      <h4>{item.nomi}</h4>
-                      <p>{item.narx.toLocaleString()} so'm</p>
+                      <h4 className="item-name">{item.nomi}</h4>
+                      <p className="item-price">{item.narx.toLocaleString()} so'm</p>
                     </div>
                     <div className="item-quantity">
-                      <button onClick={() => updateCartQuantity(item.id, item.quantity - 1)}>-</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => updateCartQuantity(item.id, item.quantity + 1)}>+</button>
+                      <button 
+                        className="quantity-btn minus"
+                        onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
+                      >
+                        -
+                      </button>
+                      <span className="quantity-value">{item.quantity}</span>
+                      <button 
+                        className="quantity-btn plus"
+                        onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
+                      >
+                        +
+                      </button>
                     </div>
                     <p className="item-total">
                       {(item.narx * item.quantity).toLocaleString()} so'm
                     </p>
                     <button 
-                      className="remove-btn"
+                      className="item-remove"
                       onClick={() => removeFromCart(item.id)}
                     >
                       &times;
@@ -381,7 +399,7 @@ const Cashier = () => {
                   </div>
                 ))
               ) : (
-                <div className="empty-cart">
+                <div className="cart-empty">
                   <p>Savat bo'sh</p>
                 </div>
               )}
@@ -389,22 +407,23 @@ const Cashier = () => {
 
             <div className="cart-summary">
               <div className="summary-row">
-                <span>Jami:</span>
-                <span>{subtotal.toLocaleString()} so'm</span>
+                <span className="summary-label">Jami:</span>
+                <span className="summary-value">{subtotal.toLocaleString()} so'm</span>
               </div>
               <div className="summary-row">
-                <label>Chegirma (%):</label>
+                <label className="summary-label">Chegirma (%):</label>
                 <input
                   type="number"
                   min="0"
                   max="100"
                   value={discount}
                   onChange={(e) => setDiscount(Math.min(100, Math.max(0, Number(e.target.value))))}
+                  className="discount-input"
                 />
               </div>
               <div className="summary-row total">
-                <span>Yakuniy summa:</span>
-                <span>{total.toLocaleString()} so'm</span>
+                <span className="total-label">Yakuniy summa:</span>
+                <span className="total-value">{total.toLocaleString()} so'm</span>
               </div>
             </div>
 
@@ -414,10 +433,12 @@ const Cashier = () => {
                 placeholder="Mijoz ismi (ixtiyoriy, qarz uchun majburiy)"
                 value={customer}
                 onChange={(e) => setCustomer(e.target.value)}
+                className="customer-input"
               />
               <select 
                 value={paymentMethod} 
                 onChange={(e) => setPaymentMethod(e.target.value)}
+                className="payment-select"
               >
                 <option value="cash">Naqd</option>
                 <option value="card">Karta</option>
@@ -428,19 +449,20 @@ const Cashier = () => {
                 placeholder="Eslatma (ixtiyoriy)"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
+                className="note-textarea"
               />
             </div>
 
             <div className="sale-buttons">
               <button
-                className="complete-sale-btn with-receipt"
+                className="sale-button receipt"
                 onClick={completeSaleWithReceipt}
                 disabled={!cart.length}
               >
                 Chek bilan yakunlash
               </button>
               <button
-                className="complete-sale-btn without-receipt"
+                className="sale-button no-receipt"
                 onClick={completeSaleWithoutReceipt}
                 disabled={!cart.length}
               >

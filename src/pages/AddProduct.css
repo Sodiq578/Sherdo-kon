@@ -132,7 +132,7 @@ body {
 .menu-header h2 {
   font-size: 1.2rem; /* kichikroq bo‘ldi */
   font-weight: 600;
-  color: #fff; /* oq rang bo‘ldi */
+color: #2c3e50;
   margin: 0;
   max-width: 70%; /* uzun bo‘lsa sig‘ishi uchun */
   white-space: nowrap; /* bir qatorda qolsin */

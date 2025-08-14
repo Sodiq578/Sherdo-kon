@@ -1,3 +1,4 @@
+ 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
@@ -35,7 +36,7 @@ const Sidebar = () => {
       section: "Sotuv bo'limi",
       items: [
         { path: '/cashier', icon: <HiShoppingCart size={20} />, label: 'Kassa', highlight: true },
-        { path: '/sales', icon: <HiCreditCard size={20} />, label: 'Sotuvlar' },
+       
         { path: '/returns', icon: <HiReceiptRefund size={20} />, label: 'Qaytarilganlar' },
         { path: '/debts', icon: <HiDocumentReport size={20} />, label: 'Qarzlar' },
       ],
@@ -43,7 +44,7 @@ const Sidebar = () => {
     {
       section: 'Hisobotlar',
       items: [
-        { path: '/orders', icon: <HiChartBar size={20} />, label: 'Savdo statistikasi' },
+        { path: '/sales', icon: <HiCreditCard size={20} />, label: 'Sotuvlar' },
         { path: '/stats', icon: <HiDocumentReport size={20} />, label: 'Kunlik hisobot' },
       ],
     },
@@ -127,7 +128,7 @@ const Sidebar = () => {
                   key={`${index}-${idx}`}
                   className={`nav-item ${location.pathname === navItem.path ? 'active' : ''} ${navItem.highlight ? 'highlight' : ''}`}
                   onClick={() => handleNavigation(navItem.path)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleNavigation(navItem.path)} // Fixed typo here
+                  onKeyDown={(e) => e.key === 'Enter' && handleNavigation(navItem.path)}
                   tabIndex={0}
                   role="button"
                   aria-label={navItem.label}

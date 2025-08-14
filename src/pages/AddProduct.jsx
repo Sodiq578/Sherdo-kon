@@ -24,6 +24,10 @@ const AddProduct = () => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState('');
   const [showCategoryInput, setShowCategoryInput] = useState(false);
+  const [showCategoryManagement, setShowCategoryManagement] = useState(false);
+  const [editingCategoryIndex, setEditingCategoryIndex] = useState(null);
+  const [editedCategoryName, setEditedCategoryName] = useState('');
+  const [showEditCategory, setShowEditCategory] = useState(false); // Added missing state
   const [currentTime, setCurrentTime] = useState(new Date());
   const [user, setUser] = useState(null);
   const [showScanner, setShowScanner] = useState(false);
@@ -31,6 +35,7 @@ const AddProduct = () => {
 
   const navigate = useNavigate();
   const videoRef = useRef(null);
+  const productListRef = useRef(null);
 
   // Constants
   const haftaKunlari = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
@@ -201,6 +206,11 @@ const AddProduct = () => {
     alert(`${nomi} muvaffaqiyatli ${isEditing ? "tahrirlandi" : "qo'shildi"}!`);
 
     resetForm();
+    
+    // Scroll to top of product list after adding/editing
+    if (productListRef.current) {
+      productListRef.current.scrollTop = 0;
+    }
   };
 
   // Add new category
@@ -216,6 +226,59 @@ const AddProduct = () => {
       alert("Iltimos, bo'lim nomini kiriting!");
     } else {
       alert("Bu bo'lim allaqachon mavjud!");
+    }
+  };
+
+  // Edit category
+  const editCategory = () => {
+    if (editingCategoryIndex === null || !editedCategoryName.trim()) return;
+
+    const oldCategory = categories[editingCategoryIndex];
+    const updatedCategories = [...categories];
+    updatedCategories[editingCategoryIndex] = editedCategoryName.trim();
+
+    // Update products with the old category
+    const updatedProducts = products.map(product => {
+      if (product.bolim === oldCategory) {
+        return { ...product, bolim: editedCategoryName.trim() };
+      }
+      return product;
+    });
+
+    setCategories(updatedCategories);
+    setProducts(updatedProducts);
+    localStorage.setItem('categories', JSON.stringify(updatedCategories));
+    localStorage.setItem('products', JSON.stringify(updatedProducts));
+
+    // Update form if it was using the edited category
+    if (formData.bolim === oldCategory) {
+      setFormData({ ...formData, bolim: editedCategoryName.trim() });
+    }
+
+    setEditingCategoryIndex(null);
+    setEditedCategoryName('');
+    setShowEditCategory(false);
+  };
+
+  // Delete category
+  const handleDeleteCategory = (index) => {
+    const categoryToDelete = categories[index];
+    const productsWithCategory = products.filter(p => p.bolim === categoryToDelete);
+
+    if (productsWithCategory.length > 0) {
+      alert(`Ushbu bo'limdan ${productsWithCategory.length} ta mahsulot mavjud. Avval ularni o'chiring yoki boshqa bo'limga o'tkazing!`);
+      return;
+    }
+
+    if (window.confirm(`Haqiqatan ham "${categoryToDelete}" bo'limini o'chirmoqchimisiz?`)) {
+      const updatedCategories = categories.filter((_, i) => i !== index);
+      setCategories(updatedCategories);
+      localStorage.setItem('categories', JSON.stringify(updatedCategories));
+
+      // Reset form if it was using the deleted category
+      if (formData.bolim === categoryToDelete) {
+        setFormData({ ...formData, bolim: '' });
+      }
     }
   };
 
@@ -290,7 +353,7 @@ const AddProduct = () => {
           {user && (
             <div className="user-info">
               <span className="username">{user.ism}</span>
-              <span className="registration-time">Ro'yxatdan o'tgan: {calculateRegistrationTime()} oldin</span>
+              <span className="registration-time">Ro'yxatdan o'tgan: {calculateRegistrationTime()}</span>
             </div>
           )}
         </div>
@@ -313,13 +376,13 @@ const AddProduct = () => {
         {/* Navigation Tabs */}
         <div className="tabs">
           <button onClick={() => navigate('/menu')} aria-label="Tovar jadvaliga o'tish">Tovar jadvali</button>
-          <button onClick={() => navigate('/orders')} aria-label="Savdo statistikasiga o'tish">Savdo statistikasi</button>
+          <button onClick={() => navigate('/stats')} aria-label="Savdo statistikasiga o'tish">Savdo statistikasi</button>
           <button className="active" aria-label="Tovar qo'shish sahifasi">Tovar qo'shish</button>
           <button onClick={() => navigate('/cashier')} aria-label="Kassir sahifasiga o'tish">Kassir</button>
         </div>
 
         {/* Main Content */}
-        <div className={`add-product-container ${isEditing ? 'editing-mode' : ''}`}>
+        <div className="add-product-container">
           {/* Product Form */}
           <form className={`add-product-form ${isEditing ? 'editing-form' : ''}`} onSubmit={handleSubmit}>
             <h3>{isEditing ? 'Tovarni tahrirlash' : 'Yangi tovar qo\'shish'}</h3>
@@ -406,51 +469,127 @@ const AddProduct = () => {
               </div>
             </div>
 
-            {/* Category */}
+            {/* Category Section */}
             <div className="form-group">
               <label htmlFor="bolim">Bo'lim *</label>
-              <div className="category-select">
-                <select
-                  id="bolim"
-                  name="bolim"
-                  value={formData.bolim}
-                  onChange={handleChange}
-                  required
-                  aria-required="true"
-                >
-                  <option value="">Bo'limni tanlang</option>
-                  {categories.map((category, index) => (
-                    <option key={index} value={category}>{category}</option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  className="add-category-btn"
-                  onClick={() => setShowCategoryInput(!showCategoryInput)}
-                  aria-label={showCategoryInput ? 'Bo\'lim qo\'shishni bekor qilish' : 'Yangi bo\'lim qo\'shish'}
-                >
-                  {showCategoryInput ? 'Bekor qilish' : '+ Yangi bo\'lim'}
-                </button>
-              </div>
-
-              {showCategoryInput && (
-                <div className="new-category-input">
-                  <input
-                    type="text"
-                    placeholder="Yangi bo'lim nomi"
-                    value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}
-                    aria-label="Yangi bo'lim nomi"
-                  />
+              <div className="category-select-container">
+                <div className="category-select-row">
+                  <select
+                    id="bolim"
+                    name="bolim"
+                    value={formData.bolim}
+                    onChange={handleChange}
+                    required
+                    aria-required="true"
+                    className="category-dropdown"
+                  >
+                    <option value="">Bo'limni tanlang</option>
+                    {categories.map((category, index) => (
+                      <option key={index} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                  
                   <button
                     type="button"
-                    className="save-category-btn"
-                    onClick={addCategory}
-                    disabled={!newCategory.trim()}
-                    aria-label="Yangi bo'limni saqlash"
+                    className="category-action-btn"
+                    onClick={() => setShowCategoryInput(!showCategoryInput)}
+                    aria-label={showCategoryInput ? 'Bo\'lim qo\'shishni bekor qilish' : 'Yangi bo\'lim qo\'shish'}
                   >
-                    Saqlash
+                    <i className={`fas ${showCategoryInput ? 'fa-times' : 'fa-plus'}`}></i>
                   </button>
+                </div>
+
+                {showCategoryInput && (
+                  <div className="new-category-form">
+                    <div className="form-group">
+                      <input
+                        type="text"
+                        placeholder="Yangi bo'lim nomi"
+                        value={newCategory}
+                        onChange={(e) => setNewCategory(e.target.value)}
+                        aria-label="Yangi bo'lim nomi"
+                        className="category-input"
+                        autoFocus
+                      />
+                    </div>
+                    <div className="category-form-actions">
+                      <button
+                        type="button"
+                        className="save-category-btn"
+                        onClick={addCategory}
+                        disabled={!newCategory.trim()}
+                        aria-label="Yangi bo'limni saqlash"
+                      >
+                        <i className="fas fa-save"></i> Saqlash
+                      </button>
+                      <button
+                        type="button"
+                        className="cancel-category-btn"
+                        onClick={() => {
+                          setShowCategoryInput(false);
+                          setNewCategory('');
+                        }}
+                        aria-label="Bekor qilish"
+                      >
+                        <i className="fas fa-times"></i> Bekor qilish
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Category Management Section */}
+              {categories.length > 0 && (
+                <div className="category-management">
+                  <div className="category-list-header">
+                    <span>Mavjud bo'limlar ({categories.length})</span>
+                    <button
+                      type="button"
+                      className="manage-categories-btn"
+                      onClick={() => setShowCategoryManagement(!showCategoryManagement)}
+                      aria-label="Bo'limlarni boshqarish"
+                    >
+                      <i className={`fas ${showCategoryManagement ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+                    </button>
+                  </div>
+                  
+                  {showCategoryManagement && (
+                    <div className="category-list-container">
+                      <ul className="category-list">
+                        {categories.map((category, index) => (
+                          <li key={index} className="category-item">
+                            <span>{category}</span>
+                            <div className="category-item-actions">
+                              <button
+                                type="button"
+                                className="edit-category-btn"
+                                onClick={() => {
+                                  setEditingCategoryIndex(index);
+                                  setEditedCategoryName(category);
+                                  setShowCategoryInput(true);
+                                  setNewCategory(category);
+                                }}
+                                aria-label={`${category} bo'limini tahrirlash`}
+                              >
+                                <i className="fas fa-edit"></i>
+                              </button>
+                              <button
+                                type="button"
+                                className="delete-category-btn"
+                                onClick={() => handleDeleteCategory(index)}
+                                disabled={products.some(p => p.bolim === category)}
+                                aria-label={`${category} bo'limini o'chirish`}
+                              >
+                                <i className="fas fa-trash"></i>
+                              </button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -520,68 +659,70 @@ const AddProduct = () => {
           )}
 
           {/* Product List */}
-          <div className="product-list">
+          <div className="product-list" ref={productListRef}>
             <h3>Mavjud mahsulotlar ({filteredProducts.length})</h3>
-            {filteredProducts.length > 0 ? (
-              <div className="product-items">
-                {filteredProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    className={`product-item ${product.stockStatus} ${product.kerakli ? 'essential' : ''}`}
-                  >
-                    <div className="product-details">
-                      {product.rasm ? (
-                        <img src={product.rasm} alt={product.nomi} className="product-thumbnail" />
-                      ) : (
-                        <div className="product-thumbnail" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#e9ecef' }}>
-                          <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Rasm yo'q</span>
+            <div className="product-items-container">
+              {filteredProducts.length > 0 ? (
+                <div className="product-items">
+                  {filteredProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      className={`product-item ${product.stockStatus} ${product.kerakli ? 'essential' : ''}`}
+                    >
+                      <div className="product-details">
+                        {product.rasm ? (
+                          <img src={product.rasm} alt={product.nomi} className="product-thumbnail" />
+                        ) : (
+                          <div className="product-thumbnail" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#e9ecef' }}>
+                            <span style={{ color: '#6c757d', fontSize: '0.9rem' }}>Rasm yo'q</span>
+                          </div>
+                        )}
+                        <div className="product-info">
+                          <h4>
+                            {product.nomi}
+                            {product.kerakli && <span className="essential-badge">Kerakli</span>}
+                          </h4>
+                          <p>Kodi: {product.kodi}</p>
+                          {product.shtrix_kod && <p>Shtrix-kod: {product.shtrix_kod}</p>}
+                          <p>Narxi: {product.narx.toLocaleString()} so'm</p>
+                          <p className="stock-info">
+                            Soni: {product.soni} {product.stockStatus === 'out-of-stock' && '(Tugagan)'}
+                            {product.stockStatus === 'low-stock' && '(Kam qolgan)'}
+                          </p>
+                          <p>Bo'lim: {product.bolim}</p>
+                          <p className="date-info">
+                            Qo'shilgan: {new Date(product.createdAt).toLocaleDateString('uz-UZ')}
+                            {product.createdAt !== product.updatedAt && (
+                              <span>, Tahrirlangan: {new Date(product.updatedAt).toLocaleDateString('uz-UZ')}</span>
+                            )}
+                          </p>
                         </div>
-                      )}
-                      <div className="product-info">
-                        <h4>
-                          {product.nomi}
-                          {product.kerakli && <span className="essential-badge">Kerakli</span>}
-                        </h4>
-                        <p>Kodi: {product.kodi}</p>
-                        {product.shtrix_kod && <p>Shtrix-kod: {product.shtrix_kod}</p>}
-                        <p>Narxi: {product.narx.toLocaleString()} so'm</p>
-                        <p className="stock-info">
-                          Soni: {product.soni} {product.stockStatus === 'out-of-stock' && '(Tugagan)'}
-                          {product.stockStatus === 'low-stock' && '(Kam qolgan)'}
-                        </p>
-                        <p>Bo'lim: {product.bolim}</p>
-                        <p className="date-info">
-                          Qo'shilgan: {new Date(product.createdAt).toLocaleDateString('uz-UZ')}
-                          {product.createdAt !== product.updatedAt && (
-                            <span>, Tahrirlangan: {new Date(product.updatedAt).toLocaleDateString('uz-UZ')}</span>
-                          )}
-                        </p>
+                      </div>
+                      <div className="product-actions">
+                        <button
+                          onClick={() => editProduct(product)}
+                          className="edit-btn"
+                          aria-label={`${product.nomi} mahsulotini tahrirlash`}
+                        >
+                          Tahrirlash
+                        </button>
+                        <button
+                          onClick={() => deleteProduct(product)}
+                          className="delete-btn"
+                          aria-label={`${product.nomi} mahsulotini o'chirish`}
+                        >
+                          O'chirish
+                        </button>
                       </div>
                     </div>
-                    <div className="product-actions">
-                      <button
-                        onClick={() => editProduct(product)}
-                        className="edit-btn"
-                        aria-label={`${product.nomi} mahsulotini tahrirlash`}
-                      >
-                        Tahrirlash
-                      </button>
-                      <button
-                        onClick={() => deleteProduct(product)}
-                        className="delete-btn"
-                        aria-label={`${product.nomi} mahsulotini o'chirish`}
-                      >
-                        O'chirish
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="no-products">
-                <p>Mahsulotlar topilmadi</p>
-              </div>
-            )}
+                  ))}
+                </div>
+              ) : (
+                <div className="no-products">
+                  <p>Mahsulotlar topilmadi</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

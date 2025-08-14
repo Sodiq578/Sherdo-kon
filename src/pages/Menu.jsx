@@ -7,6 +7,7 @@ import jsQR from 'jsqr';
 const Menu = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [user, setUser] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showProductDetail, setShowProductDetail] = useState(false);
@@ -19,6 +20,9 @@ const Menu = () => {
 
   const daysOfWeek = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
   const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
+
+  // Get unique categories from products
+  const categories = ['all', ...new Set(products.map(product => product.bolim).filter(Boolean))];
 
   // Load products, user data, and update time/subscription every second
   useEffect(() => {
@@ -116,12 +120,13 @@ const Menu = () => {
     requestAnimationFrame(scan);
   };
 
-  // Filter products based on search term
+  // Filter products based on search term and category
   const filteredProducts = products.filter(
     (product) =>
-      product.nomi?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.kodi?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (product.shtrix_kod && product.shtrix_kod.toLowerCase().includes(searchTerm.toLowerCase()))
+      (selectedCategory === 'all' || product.bolim === selectedCategory) &&
+      (product.nomi?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.kodi?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (product.shtrix_kod && product.shtrix_kod.toLowerCase().includes(searchTerm.toLowerCase())))
   );
 
   // Open product detail modal
@@ -205,15 +210,12 @@ const Menu = () => {
           </div>
         </div>
 
-        {/* Header, Search Bar, and Tabs in One Row */}
+        {/* Header, Search Bar, Category Dropdown, and Tabs in One Row */}
         <div className="menu-header">
           <div className="header-tabs-container">
-            <h2>Mahsulotlar ro'yxati</h2>
+            <h2 className='title'>Mahsulotlar ro'yxati</h2>
             <div className="tabs-search-container">
               <div className="search-container">
-                <button className="barcode-search-btn" onClick={() => setShowScanner(true)}>
-                  <i className="fas fa-barcode"></i> Shtrix orqali qidirish
-                </button>
                 <div className="search-bar">
                   <input
                     type="text"
@@ -221,12 +223,26 @@ const Menu = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
+                  <button className="barcode-search-btn" onClick={() => setShowScanner(true)}>
+                    <i className="fas fa-barcode"></i>
+                  </button>
                   <i className="fas fa-search"></i>
                 </div>
+                <select
+                  className="category-select"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category === 'all' ? 'Barcha bo\'limlar' : category}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="tabs">
                 <button className="active">Mahsulotlar ro'yxati</button>
-                <button onClick={() => navigate('/orders')}>Sotuv statistikasi</button>
+                <button onClick={() => navigate('/stats')}>Sotuv statistikasi</button>
                 <button onClick={() => navigate('/add-product')}>Yangi mahsulot qo'shish</button>
                 <button onClick={() => navigate('/cashier')}>Kassir</button>
               </div>
@@ -240,7 +256,7 @@ const Menu = () => {
             <div className="products-header">
               <h3>Mahsulotlar ({filteredProducts.length})</h3>
               <div className="products-actions">
-                <button onClick={() => navigate('/add-product')} className="add-product-btn">
+                <button onClick={() => navigate('/add-product')} className="add-product-btn btn btn-primary">
                   <i className="fas fa-plus"></i> Yangi mahsulot
                 </button>
               </div>
@@ -284,7 +300,7 @@ const Menu = () => {
               <div className="no-products">
                 <i className="fas fa-box-open"></i>
                 <p>Hech qanday mahsulot topilmadi</p>
-                <button onClick={() => navigate('/add-product')} className="add-product-btn">
+                <button onClick={() => navigate('/add-product')} className="add-product-btn btn btn-primary">
                   <i className="fas fa-plus"></i> Yangi mahsulot qo'shish
                 </button>
               </div>
@@ -363,11 +379,11 @@ const Menu = () => {
               <div className="modal-footer">
                 <button
                   onClick={() => navigate(`/edit-product/${selectedProduct.id}`)}
-                  className="edit-btn"
+                  className="edit-btn btn btn-primary"
                 >
                   <i className="fas fa-edit"></i> Tahrirlash
                 </button>
-                <button onClick={closeProductDetail} className="close-btn">
+                <button onClick={closeProductDetail} className="close-btn btn btn-danger">
                   <i className="fas fa-times"></i> Yopish
                 </button>
               </div>
@@ -385,7 +401,7 @@ const Menu = () => {
               <p>Kameraga shtrix-kodni ko'rsating</p>
               <video ref={videoRef} playsInline />
               <canvas ref={canvasRef} style={{ display: 'none' }} />
-              <button className="close-scanner-btn" onClick={() => setShowScanner(false)}>
+              <button className="close-scanner-btn btn btn-danger" onClick={() => setShowScanner(false)}>
                 <i className="fas fa-times"></i> Yopish
               </button>
             </div>

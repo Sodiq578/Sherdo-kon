@@ -4,7 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Menu from './pages/Menu';
 import AddProduct from './pages/AddProduct';
-import Orders from './pages/Orders';
+ 
 import Stats from './pages/Stats';
 import Sales from './pages/Sales';
 import Cashier from './pages/Cashier';
@@ -23,7 +23,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/menu" element={<Menu />} />
           <Route path="/add-product" element={<AddProduct />} />
-          <Route path="/orders" element={<Orders />} />
+    
           <Route path="/stats" element={<Stats />} />
           <Route path="/sales" element={<Sales />} />
           <Route path="/cashier" element={<Cashier />} />

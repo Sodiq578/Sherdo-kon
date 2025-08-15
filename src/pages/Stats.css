@@ -1,4 +1,4 @@
-/* Stats.css - Chiroyli, zamonaviy va to'liq responsiv dizayn */
+
 
 :root {
   --primary-color: #4f46e5; /* Indigo */
@@ -52,7 +52,6 @@ body {
   background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: slideIn 0.5s ease-in-out;
 }
 
 /* Tabs */
@@ -84,7 +83,6 @@ body {
 .tabs button:hover {
   background: var(--primary-color);
   color: white;
-  transform: translateY(-2px);
 }
 
 /* Filters */
@@ -147,9 +145,10 @@ body {
   padding: 16px;
   text-align: center;
   box-shadow: var(--shadow-sm);
-  transition: var(--transition);
   position: relative;
   overflow: hidden;
+  opacity: 0; /* Animatsiya boshlanishidan oldin ko'rinmas */
+  animation: fadeInUp 0.3s ease-out forwards; /* Tezroq va chiroyli animatsiya */
 }
 
 .summary-card::before {
@@ -163,7 +162,6 @@ body {
 }
 
 .summary-card:hover {
-  transform: translateY(-4px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
@@ -193,11 +191,6 @@ body {
   border-radius: 12px;
   padding: 20px;
   box-shadow: var(--shadow-sm);
-  transition: var(--transition);
-}
-
-.chart-wrapper:hover {
-  transform: translateY(-4px);
 }
 
 .chart-wrapper h3 {
@@ -253,28 +246,23 @@ body {
   z-index: 10;
 }
 
-.stats-table tbody tr {
-  transition: var(--transition);
-}
-
 .stats-table tbody tr:hover {
   background-color: #f0f5ff;
-  transform: scale(1.01);
 }
 
 .stats-table td {
   color: var(--text-color);
 }
 
-/* Animations */
-@keyframes slideIn {
+/* Single Animation for Summary Cards */
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(15px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 

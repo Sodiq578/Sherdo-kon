@@ -146,7 +146,7 @@ const Stats = () => {
       <Sidebar />
       <div className="content">
         <div className="menu-header">
-          <h2 className="stats-title">Sotuv statistikasi</h2>
+          <h2 className="stats-title">Sotuvlar bo'yicha To'liq Statistika va Analiz</h2>
         </div>
         
         <div className="tabs">
@@ -188,19 +188,19 @@ const Stats = () => {
 
         {/* Umumiy statistikalar */}
         <div className="stats-summary">
-          <div className="summary-card">
+          <div className="summary-card" style={{ animationDelay: '0.05s' }}>
             <h4>Jami sotuvlar</h4>
             <p>{totalStats.salesCount}</p>
           </div>
-          <div className="summary-card">
+          <div className="summary-card" style={{ animationDelay: '0.1s' }}>
             <h4>Jami daromad</h4>
             <p>{totalStats.totalRevenue.toLocaleString()} so'm</p>
           </div>
-          <div className="summary-card">
+          <div className="summary-card" style={{ animationDelay: '0.15s' }}>
             <h4>Sotilgan mahsulotlar</h4>
             <p>{totalStats.totalProducts}</p>
           </div>
-          <div className="summary-card">
+          <div className="summary-card" style={{ animationDelay: '0.2s' }}>
             <h4>Turli mahsulotlar</h4>
             <p>{totalStats.uniqueProducts}</p>
           </div>
@@ -216,7 +216,8 @@ const Stats = () => {
                 responsive: true,
                 plugins: {
                   legend: { position: 'right' }
-                }
+                },
+                animation: false
               }} 
             />
           </div>
@@ -237,7 +238,8 @@ const Stats = () => {
                       callback: value => value.toLocaleString() + ' so\'m'
                     }
                   }
-                }
+                },
+                animation: false
               }} 
             />
           </div>

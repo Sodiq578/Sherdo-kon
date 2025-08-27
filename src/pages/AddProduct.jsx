@@ -3,6 +3,7 @@ import './AddProduct.css';
 import Sidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
 import Quagga from '@ericblade/quagga2';
+import Select from 'react-select';
 
 const AddProduct = () => {
   // State declarations
@@ -27,11 +28,12 @@ const AddProduct = () => {
   const [showCategoryManagement, setShowCategoryManagement] = useState(false);
   const [editingCategoryIndex, setEditingCategoryIndex] = useState(null);
   const [editedCategoryName, setEditedCategoryName] = useState('');
-  const [showEditCategory, setShowEditCategory] = useState(false); // Added missing state
+  const [showEditCategory, setShowEditCategory] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [user, setUser] = useState(null);
   const [showScanner, setShowScanner] = useState(false);
   const [scannerLoading, setScannerLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const navigate = useNavigate();
   const videoRef = useRef(null);
@@ -145,10 +147,26 @@ const AddProduct = () => {
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : type === 'file' ? files[0] : value,
-    });
+    
+    if (type === 'file' && files && files[0]) {
+      const file = files[0];
+      setFormData({
+        ...formData,
+        [name]: file,
+      });
+      
+      // Create a preview for the image
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === 'checkbox' ? checked : value,
+      });
+    }
   };
 
   // Form submission handler
@@ -207,7 +225,6 @@ const AddProduct = () => {
 
     resetForm();
     
-    // Scroll to top of product list after adding/editing
     if (productListRef.current) {
       productListRef.current.scrollTop = 0;
     }
@@ -237,7 +254,6 @@ const AddProduct = () => {
     const updatedCategories = [...categories];
     updatedCategories[editingCategoryIndex] = editedCategoryName.trim();
 
-    // Update products with the old category
     const updatedProducts = products.map(product => {
       if (product.bolim === oldCategory) {
         return { ...product, bolim: editedCategoryName.trim() };
@@ -250,7 +266,6 @@ const AddProduct = () => {
     localStorage.setItem('categories', JSON.stringify(updatedCategories));
     localStorage.setItem('products', JSON.stringify(updatedProducts));
 
-    // Update form if it was using the edited category
     if (formData.bolim === oldCategory) {
       setFormData({ ...formData, bolim: editedCategoryName.trim() });
     }
@@ -275,7 +290,6 @@ const AddProduct = () => {
       setCategories(updatedCategories);
       localStorage.setItem('categories', JSON.stringify(updatedCategories));
 
-      // Reset form if it was using the deleted category
       if (formData.bolim === categoryToDelete) {
         setFormData({ ...formData, bolim: '' });
       }
@@ -295,6 +309,14 @@ const AddProduct = () => {
       bolim: product.bolim,
       id: product.id,
     });
+    
+    // Set image preview if product has an image
+    if (product.rasm) {
+      setImagePreview(product.rasm);
+    } else {
+      setImagePreview(null);
+    }
+    
     setIsEditing(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -324,6 +346,7 @@ const AddProduct = () => {
       bolim: '',
       id: null,
     });
+    setImagePreview(null);
     setIsEditing(false);
   };
 
@@ -473,29 +496,45 @@ const AddProduct = () => {
             <div className="form-group">
               <label htmlFor="bolim">Bo'lim *</label>
               <div className="category-select-container">
+                <button
+                  type="button"
+                  className="add-category-btn"
+                  onClick={() => setShowCategoryInput(!showCategoryInput)}
+                  aria-label={showCategoryInput ? "Bo'lim qo'shishni bekor qilish" : "Bo'lim qo'shish"}
+                >
+                  <i className={`fas ${showCategoryInput ? 'fa-times' : 'fa-plus'}`}></i> Bo'lim qo'shish
+                </button>
                 <div className="category-select-row">
-                  <select
-                    id="bolim"
-                    name="bolim"
-                    value={formData.bolim}
-                    onChange={handleChange}
+                  <Select
+                    options={categories.map((category) => ({
+                      value: category,
+                      label: category,
+                    }))}
+                    value={
+                      formData.bolim
+                        ? { value: formData.bolim, label: formData.bolim }
+                        : null
+                    }
+                    onChange={(selectedOption) =>
+                      setFormData({
+                        ...formData,
+                        bolim: selectedOption ? selectedOption.value : '',
+                      })
+                    }
+                    placeholder="Bo'limni tanlang yoki kiriting"
+                    isClearable
+                    isSearchable
                     required
                     aria-required="true"
                     className="category-dropdown"
-                  >
-                    <option value="">Bo'limni tanlang</option>
-                    {categories.map((category, index) => (
-                      <option key={index} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                  
+                    classNamePrefix="react-select"
+                    noOptionsMessage={() => "Bo'lim topilmadi"}
+                  />
                   <button
                     type="button"
                     className="category-action-btn"
                     onClick={() => setShowCategoryInput(!showCategoryInput)}
-                    aria-label={showCategoryInput ? 'Bo\'lim qo\'shishni bekor qilish' : 'Yangi bo\'lim qo\'shish'}
+                    aria-label={showCategoryInput ? "Bo'lim qo'shishni bekor qilish" : "Yangi bo'lim qo'shish"}
                   >
                     <i className={`fas ${showCategoryInput ? 'fa-times' : 'fa-plus'}`}></i>
                   </button>
@@ -539,7 +578,7 @@ const AddProduct = () => {
                   </div>
                 )}
               </div>
-              
+
               {/* Category Management Section */}
               {categories.length > 0 && (
                 <div className="category-management">
@@ -605,7 +644,17 @@ const AddProduct = () => {
                 onChange={handleChange}
                 aria-label="Mahsulot rasmini yuklash"
               />
-              {formData.rasm && typeof formData.rasm === 'string' && (
+              
+              {/* Image Preview */}
+              {imagePreview && (
+                <div className="current-image">
+                  <p>Rasm ko'rinishi:</p>
+                  <img src={imagePreview} alt="Mahsulot rasmi" width="120" />
+                </div>
+              )}
+              
+              {/* Show current image when editing */}
+              {isEditing && formData.rasm && typeof formData.rasm === 'string' && !imagePreview && (
                 <div className="current-image">
                   <p>Joriy rasm:</p>
                   <img src={formData.rasm} alt="Joriy mahsulot rasmi" width="120" />

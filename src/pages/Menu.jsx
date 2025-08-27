@@ -129,9 +129,26 @@ const Menu = () => {
         (product.shtrix_kod && product.shtrix_kod.toLowerCase().includes(searchTerm.toLowerCase())))
   );
 
-  // Open product detail modal
-  const openProductDetail = (product) => {
-    setSelectedProduct(product);
+  // Check if image URL is valid
+  const checkImage = (url) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+    });
+  };
+
+  // Open product detail modal with image validation
+  const openProductDetail = async (product) => {
+    const copiedProduct = { ...product };
+    if (copiedProduct.rasm) {
+      const isValid = await checkImage(copiedProduct.rasm);
+      if (!isValid) {
+        copiedProduct.rasm = ''; // Set to empty if invalid
+      }
+    }
+    setSelectedProduct(copiedProduct);
     setShowProductDetail(true);
   };
 
@@ -270,7 +287,7 @@ const Menu = () => {
                     className={`product-card ${product.soni <= 0 ? 'disabled' : ''}`}
                     onClick={() => product.soni > 0 && openProductDetail(product)}
                   >
-                    {product.rasm ? (
+                    {product.rasm && product.rasm !== '' ? (
                       <img src={product.rasm} alt={product.nomi} className="product-image" />
                     ) : (
                       <div className="product-image-placeholder">
@@ -324,7 +341,7 @@ const Menu = () => {
                 </span>
               </div>
               <div className="modal-body">
-                {selectedProduct.rasm ? (
+                {selectedProduct.rasm && selectedProduct.rasm !== '' ? (
                   <img src={selectedProduct.rasm} alt={selectedProduct.nomi} className="detail-image" />
                 ) : (
                   <div className="detail-image-placeholder">
@@ -377,12 +394,6 @@ const Menu = () => {
                 </div>
               </div>
               <div className="modal-footer">
-                <button
-                  onClick={() => navigate(`/edit-product/${selectedProduct.id}`)}
-                  className="edit-btn btn btn-primary"
-                >
-                  <i className="fas fa-edit"></i> Tahrirlash
-                </button>
                 <button onClick={closeProductDetail} className="close-btn btn btn-danger">
                   <i className="fas fa-times"></i> Yopish
                 </button>
